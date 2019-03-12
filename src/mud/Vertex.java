@@ -1,5 +1,6 @@
+package mud;
 /***********************************************************************
- * cs3524.solutions.mud.Vertex
+ * cs3524.solutions.mud.mud.Vertex
  ***********************************************************************/
 
 import java.util.Map;
@@ -8,13 +9,13 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
-// Represents a location in the MUD (a vertex in the graph).
+// Represents a location in the mud.MUD (a vertex in the graph).
 class Vertex
 {
-    public String _name;				// Vertex name
+    public String _name;				// mud.Vertex name
     public String _msg = "";			// Message about this location
     public Map<String,Edge> _routes;	// Association between direction
-				     					// (e.g. "north") and a path (Edge)
+				     					// (e.g. "north") and a path (mud.Edge)
     public List<String> _things;    	// The things (e.g. players) at this location
 
     public Vertex( String nm )

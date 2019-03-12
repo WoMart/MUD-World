@@ -1,5 +1,5 @@
-/***********************************************************************
- * cs3524.solutions.mud.MUD
+package mud; /***********************************************************************
+ * cs3524.solutions.mud.mud.MUD
  ***********************************************************************/
 
 import java.io.FileReader;
@@ -8,13 +8,11 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.HashMap;
 
 /**
- * A class that can be used to represent a MUD; essenially, this is a
+ * A class that can be used to represent a mud.MUD; essenially, this is a
  * graph.
  */
 
@@ -24,7 +22,7 @@ public class MUD
      * Private stuff
      */
 
-    // A record of all the vertices in the MUD graph. HashMaps are not
+    // A record of all the vertices in the mud.MUD graph. HashMaps are not
     // synchronized, but we don't really need this to be synchronised.
     private Map<String,Vertex> vertexMap = new HashMap<String,Vertex>();
 
@@ -60,7 +58,7 @@ public class MUD
 
     /**
      * If vertexName is not present, add it to vertexMap.  In either
-     * case, return the Vertex. Used only for creating the MUD.
+     * case, return the mud.Vertex. Used only for creating the mud.MUD.
      */
     private Vertex getOrCreateVertex( String vertexName )
     {
@@ -118,7 +116,7 @@ public class MUD
      * the basis of a file with the following format:
      * location message
      * The first location is assumed to be the starting point for
-     * users joining the MUD.
+     * users joining the mud.MUD.
      */
     private void recordMessages( String messagesfile )
     {
@@ -182,13 +180,13 @@ public class MUD
 
     /**
      * All the public stuff. These methods are designed to hide the
-     * internal structure of the MUD. Could declare these on an
-     * interface and have external objects interact with the MUD via
+     * internal structure of the mud.MUD. Could declare these on an
+     * interface and have external objects interact with the mud.MUD via
      * the interface.
      */
 
     /**
-     * A constructor that creates the MUD.
+     * A constructor that creates the mud.MUD.
      */
     public MUD( String edgesfile, String messagesfile, String thingsfile )
     {
@@ -200,7 +198,7 @@ public class MUD
 		System.out.println( vertexMap.size( ) + " vertices\n" );
     }
 
-    // This method enables us to display the entire MUD (mostly used
+    // This method enables us to display the entire mud.MUD (mostly used
     // for testing purposes so that we can check that the structure
     // defined has been successfully parsed.
     public String toString()
@@ -226,7 +224,7 @@ public class MUD
     }
 
     /**
-     * Get the start location for new MUD users.
+     * Get the start location for new mud.MUD users.
      */
     public String startLocation()
     {
@@ -252,7 +250,7 @@ public class MUD
     }
 
     /**
-     * A method to enable a player to move through the MUD (a player
+     * A method to enable a player to move through the mud.MUD (a player
      * is a thing). Checks that there is a route to travel on. Returns
      * the location moved to.
      */
@@ -269,15 +267,23 @@ public class MUD
 
     /**
      * A main method that can be used to testing purposes to ensure
-     * that the MUD is specified correctly.
+     * that the mud.MUD is specified correctly.
      */
     public static void main(String[] args)
     {
+    	/*
+    	 Let's forget about the arguments for now
+
+    	 .\mymud.edg .\mymud.msg .\mymud.thg
 		if (args.length != 3) {
 			System.err.println("Usage: java Graph <edgesfile> <messagesfile> <thingsfile>");
 			return;
 		}
-		MUD m = new MUD( args[0], args[1], args[2] );
+		*/
+		MUD m = new MUD(
+				"mymud.edg",
+				"mymud.msg",
+				"mymud.thg" );
 		System.out.println( m.toString() );
     }
 }
