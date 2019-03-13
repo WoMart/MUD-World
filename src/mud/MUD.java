@@ -281,9 +281,9 @@ public class MUD
 		}
 		*/
 		MUD m = new MUD(
-				"mymud.edg",
-				"mymud.msg",
-				"mymud.thg" );
+				"static/mymud.edg",
+				"static/mymud.msg",
+				"static/mymud.thg" );
 		System.out.println( m.toString() );
     }
 }
