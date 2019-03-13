@@ -188,11 +188,11 @@ public class MUD
     /**
      * A constructor that creates the mud.MUD.
      */
-    public MUD( String edgesfile, String messagesfile, String thingsfile )
+    public MUD()
     {
-		createEdges( edgesfile );
-		recordMessages( messagesfile );
-		recordThings( thingsfile );
+		createEdges( "static/mymud.edg" );
+		recordMessages( "static/mymud.msg" );
+		recordThings( "static/mymud.thg" );
 
 		System.out.println( "Files read..." );
 		System.out.println( vertexMap.size( ) + " vertices\n" );
@@ -271,19 +271,14 @@ public class MUD
      */
     public static void main(String[] args)
     {
-    	/*
-    	 Let's forget about the arguments for now
-
-    	 .\mymud.edg .\mymud.msg .\mymud.thg
-		if (args.length != 3) {
-			System.err.println("Usage: java Graph <edgesfile> <messagesfile> <thingsfile>");
-			return;
-		}
+    	/**
+    	 Let's forget about the arguments for now .\mymud.edg .\mymud.msg .\mymud.thg
+         if (args.length != 3) {
+            System.err.println("Usage: java Graph <edgesfile> <messagesfile> <thingsfile>");
+            return;
+         }
 		*/
-		MUD m = new MUD(
-				"static/mymud.edg",
-				"static/mymud.msg",
-				"static/mymud.thg" );
+		MUD m = new MUD();
 		System.out.println( m.toString() );
     }
 }
