@@ -1,2 +1,11 @@
+#IntelliJ
 .idea/
+
+#Output folder
+out/
+
+#metadata
 *.xml
+
+#compiled classes
+*.class
