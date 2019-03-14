@@ -198,22 +198,6 @@ public class MUD
 		System.out.println( vertexMap.size( ) + " vertices\n" );
     }
 
-    // This method enables us to display the entire mud.MUD (mostly used
-    // for testing purposes so that we can check that the structure
-    // defined has been successfully parsed.
-    public String toString()
-    {
-		String summary = "";
-		Iterator iter = vertexMap.keySet().iterator();
-		String loc;
-		while (iter.hasNext()) {
-			loc = (String)iter.next();
-			summary = summary + "Node: " + loc;
-			summary += ((Vertex)vertexMap.get( loc )).toString();
-		}
-		summary += "Start location = " + _startLocation;
-		return summary;
-    }
 
     /**
      * A method to provide a string describing a particular location.
@@ -230,6 +214,7 @@ public class MUD
     {
 		return _startLocation;
     }
+
 
     /**
      * Add a thing to a location; used to enable us to add new users.
@@ -265,20 +250,23 @@ public class MUD
 		return e._dest._name;
     }
 
-    /**
-     * A main method that can be used to testing purposes to ensure
-     * that the mud.MUD is specified correctly.
-     */
-    public static void main(String[] args)
-    {
-    	/**
-    	 Let's forget about the arguments for now .\mymud.edg .\mymud.msg .\mymud.thg
-         if (args.length != 3) {
-            System.err.println("Usage: java Graph <edgesfile> <messagesfile> <thingsfile>");
-            return;
-         }
-		*/
-		MUD m = new MUD();
-		System.out.println( m.toString() );
-    }
+	/**
+	 * This method enables us to display the entire mud.MUD (mostly used
+	 * for testing purposes so that we can check that the structure
+	 * defined has been successfully parsed.
+	 */
+	public String toString()
+	{
+		String summary = "";
+		Iterator iter = vertexMap.keySet().iterator();
+		String loc;
+		while (iter.hasNext()) {
+			loc = (String)iter.next();
+			summary = summary + "Node: " + loc;
+			summary += ((Vertex)vertexMap.get( loc )).toString();
+		}
+		summary += "Start location = " + _startLocation;
+		return summary;
+	}
+
 }
