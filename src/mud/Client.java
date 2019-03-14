@@ -14,6 +14,7 @@ public class Client implements ClientInterface {
     private int port;
 
     private String username;
+    private String location;
 
     public Client(String h, int p, String u) throws RemoteException {
         this.hostname = h;
@@ -51,16 +52,11 @@ public class Client implements ClientInterface {
     }
 
     public void play() throws RemoteException {
+        this.location = this.server.startLocation();
+
         Scanner in = new Scanner(System.in);
-
-        System.out.print("I desire to ");
+        System.out.print("\nI desire to ");
         String action = in.nextLine().trim();
-
-        switch(action){
-            case "look": this.
-        }
-
-
     }
     public void test() throws RemoteException {
         System.out.println((this.server).test());

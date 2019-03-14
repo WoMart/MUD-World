@@ -70,5 +70,9 @@ public class Server implements ServerInterface {
         return online + "\n";
     }
 
+    public String startLocation() throws RemoteException {
+        return this.mud.startLocation();
+    }
+
     public String test() { return "this is a server"; }
 }
