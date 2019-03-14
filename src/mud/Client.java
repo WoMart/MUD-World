@@ -15,6 +15,7 @@ public class Client implements ClientInterface {
 
     private String username;
     private String location;
+    private boolean ingame;
 
     public Client(String h, int p, String u) throws RemoteException {
         this.hostname = h;
@@ -43,6 +44,7 @@ public class Client implements ClientInterface {
     }
 
     public void quit() throws RemoteException {
+        this.ingame = false;
         this.server.removeUser(this.username);
         System.out.println("[" + this.username + "]Disconnected from " + this.hostname);
     }
@@ -51,13 +53,32 @@ public class Client implements ClientInterface {
         System.out.println(this.server.usersOnline());
     }
 
+
     public void play() throws RemoteException {
+        Scanner in = new Scanner(System.in);
+        this.ingame = true;
         this.location = this.server.startLocation();
 
-        Scanner in = new Scanner(System.in);
-        System.out.print("\nI desire to ");
-        String action = in.nextLine().trim();
+        while (ingame) {
+            System.out.print("\nI desire to ");
+            String action = in.nextLine().trim().toLowerCase();
+
+            switch(action) {
+
+                case "exit":
+                case "quit":
+                    System.out.print("Are you sure you want to exit the game?\nEnter 'yes' to confirm: ");
+                    if (in.nextLine().trim().toLowerCase().startsWith("yes"))
+                        this.quit();
+                    break;
+
+                default:
+                    System.out.println("But to no avail...");
+                    break;
+            }
+        }
     }
+
     public void test() throws RemoteException {
         System.out.println((this.server).test());
     }

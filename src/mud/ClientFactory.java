@@ -31,8 +31,7 @@ public class ClientFactory {
         Client client = new Client(host, port, getUsername());
 
         client.join();
-        client.whoIsOnline();
-        client.quit();
+        client.play();
 
     }
 }
