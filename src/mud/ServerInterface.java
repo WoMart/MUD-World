@@ -20,5 +20,4 @@ public interface ServerInterface extends Remote {
     boolean commandTake(String mud, String loc, String thing) throws RemoteException;
     void commandDrop(String mud, String loc, String thing) throws RemoteException;
 
-    String test() throws RemoteException;
 }

@@ -36,6 +36,7 @@ public class Client implements ClientInterface {
             this.server = (ServerInterface) Naming.lookup(
                     String.format("rmi://%s:%d/mud", this.hostname, this.port));
             this.join();
+            this.menu();
         }
         catch (MalformedURLException | NotBoundException e) {
             System.err.println("Connection FAILED\n" + e);
@@ -234,7 +235,4 @@ public class Client implements ClientInterface {
         }
     }
 
-    public void test() throws RemoteException {
-        System.out.println((this.server).test());
-    }
 }

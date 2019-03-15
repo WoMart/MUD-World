@@ -5,6 +5,7 @@ package mud; /******************************************************************
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.StringTokenizer;
 
 import java.util.Iterator;
@@ -16,7 +17,7 @@ import java.util.HashMap;
  * graph.
  */
 
-public class MUD
+public class MUD implements Serializable
 {
     /**
      * Private stuff

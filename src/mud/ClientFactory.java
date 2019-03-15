@@ -9,8 +9,8 @@ public class ClientFactory {
         Scanner in = new Scanner(System.in);
         System.out.print("My name is: ");
         String name = in.nextLine().trim();
-        if(name.length() > 12){
-            System.out.println("Hmm...\nBut nobody would remember that. Let me start again. [Max character name: 12]");
+        if (name.length() > 12 | name.contains(" ")) {
+            System.out.println("Hmm...\nBut nobody would remember that. Let me start again. [Max character name: 12 | No spaces]");
             return getUsername();
         }
         return name;
@@ -31,7 +31,6 @@ public class ClientFactory {
         Client client = new Client(host, port, getUsername());
 
         client.connect();
-        client.menu();
 
     }
 }
