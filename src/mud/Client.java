@@ -1,14 +1,13 @@
 package mud;
 
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.List;
 import java.rmi.Naming;
 
-import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.net.MalformedURLException;
 
 public class Client implements ClientInterface {
 
@@ -18,7 +17,9 @@ public class Client implements ClientInterface {
 
     private String username;
     private String location;
+    private String cur_mud;
     private List<String> inventory = new ArrayList<>();
+    private boolean inmenu = false;
     private boolean ingame = false;
 
     public Client(String h, int p, String u) throws RemoteException {
@@ -28,18 +29,23 @@ public class Client implements ClientInterface {
 
         System.setProperty("java.security.policy", "static/mud.policy");
         System.setSecurityManager(new SecurityManager());
-
-        this.connect();
     }
 
     public void connect() throws RemoteException {
         try {
             this.server = (ServerInterface) Naming.lookup(
                     String.format("rmi://%s:%d/mud", this.hostname, this.port));
+            this.join();
         }
         catch (MalformedURLException | NotBoundException e) {
             System.err.println("Connection FAILED\n" + e);
         }
+    }
+
+    public void disconnect() throws RemoteException {
+        this.server.removeUser(this.username);
+        System.out.println("[" + this.username + "]Disconnected from " + this.hostname);
+        return;
     }
 
     public void join() throws RemoteException {
@@ -49,8 +55,10 @@ public class Client implements ClientInterface {
 
     private void quit() throws RemoteException {
         this.ingame = false;
-        this.server.removeUser(this.username);
-        System.out.println("[" + this.username + "]Disconnected from " + this.hostname);
+        this.location = null;
+        this.cur_mud = null;
+        this.inventory = null;
+        this.menu();
     }
 
     private void whoIsOnline() throws RemoteException {
@@ -59,12 +67,13 @@ public class Client implements ClientInterface {
 
     private void look(String loc) throws RemoteException {
         System.out.println(
-                this.server.commandLook(loc)
+                this.server.commandLook(this.cur_mud, loc)
         );
     }
 
     private void move(String dir) throws RemoteException {
         String loc = this.server.commandMove(
+                this.cur_mud,
                 this.location,
                 dir,
                 this.username );
@@ -77,7 +86,7 @@ public class Client implements ClientInterface {
     }
 
     private void take(String thing) throws RemoteException {
-        if (this.server.commandTake(this.location, thing)) {
+        if (this.server.commandTake(this.cur_mud, this.location, thing)) {
             this.inventory.add(thing);
             System.out.println(" You have put " + thing + " in your inventory.");
         }
@@ -91,7 +100,7 @@ public class Client implements ClientInterface {
             return;
         }
         System.out.println(" You have dropped " + thing + " in " + this.location + ".");
-        this.server.commandDrop(this.location, thing);
+        this.server.commandDrop(this.cur_mud, this.location, thing);
         this.inventory.remove(thing);
 
     }
@@ -124,25 +133,31 @@ public class Client implements ClientInterface {
     }
 
     public void menu() throws RemoteException {
-        this.ingame = false;
+        this.inmenu = true;
         String message = "";
-        while(!this.ingame) {
-            System.out.println("\n\t\\\\\\ Welcome to the MUD World ///" +
+        while(this.inmenu) {
+            System.out.println(
+                    "\n\t\\\\\\ Welcome to the MUD World ///" +
                     "\nMenu ( input the command in [] to choose the option ):" +
                     "\n\t1. Join MUD\t\t[ join <mud_name> ]" +
                     "\n\t2. Create MUD\t[ create <new_name> ] // TODO" +
                     "\n\t3. List MUDs\t[ list ] // TODO" +
                     "\n\t4. Exit\t\t\t[ exit ]" +
                     "\n*********************************************************\n\n" +
-                    message
-            ); message = "";
+                    message);
 
             String[] input = this.getInput();
             String action = input[0];
             String attribute = input[1];
 
             if (action.startsWith("join") & !attribute.equals("")) {
-                System.out.println(attribute);
+                if (this.server.joinMUD(attribute)) {
+                    message = "Joining the MUD " + attribute;
+                    this.cur_mud = attribute;
+                    this.play();
+                }
+                else
+                    message = "The MUD" + attribute + " does not exists";
             }
             else if (action.startsWith("create") & !attribute.equals("")) {
                 if (this.server.createMUD(attribute))
@@ -154,9 +169,9 @@ public class Client implements ClientInterface {
                 message = this.server.listMUD();
             }
             else if (action.equals("exit")){
+                this.inmenu = false;
                 System.out.println("\nQuitting MUD World");
-                this.quit();
-                return;
+                this.disconnect();
             }
             else message = "What does he mean?";
 
@@ -166,7 +181,7 @@ public class Client implements ClientInterface {
     public void play() throws RemoteException {
         Scanner in = new Scanner(System.in);
         this.ingame = true;
-        this.location = this.server.startLocation();
+        this.location = this.server.startLocation(this.cur_mud);
 
         System.out.println("\nType 'help' to see available commands");
 
@@ -208,8 +223,10 @@ public class Client implements ClientInterface {
             }
             else if (action.equals("exit") || action.equals("quit")) {
                 System.out.print("Are you sure you want to exit the game?\nEnter 'yes' to confirm: ");
-                if (in.nextLine().trim().toLowerCase().startsWith("yes"))
+                if (in.nextLine().trim().toLowerCase().startsWith("yes")) {
+                    this.ingame = false;
                     this.quit();
+                }
             }
             else {
                 System.out.println("But to no avail...");

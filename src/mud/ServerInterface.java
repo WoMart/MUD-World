@@ -9,19 +9,16 @@ public interface ServerInterface extends Remote {
     void removeUser(String username) throws RemoteException;
     String usersOnline() throws RemoteException;
 
-    String startLocation() throws RemoteException;
-
-    String listMUD() throws RemoteException;
     boolean createMUD(String name) throws RemoteException;
+    boolean joinMUD(String name) throws RemoteException;
+    String listMUD() throws RemoteException;
 
-    String commandLook(String loc) throws RemoteException;
-    String commandMove(String loc,
-                       String dir,
-                       String user) throws RemoteException;
-    boolean commandTake(String loc,
-                       String thing) throws RemoteException;
-    void commandDrop(String loc,
-                     String thing) throws RemoteException;
+    String startLocation(String mud) throws RemoteException;
+
+    String commandLook(String mud, String loc) throws RemoteException;
+    String commandMove(String mud, String loc, String dir, String user) throws RemoteException;
+    boolean commandTake(String mud, String loc, String thing) throws RemoteException;
+    void commandDrop(String mud, String loc, String thing) throws RemoteException;
 
     String test() throws RemoteException;
 }

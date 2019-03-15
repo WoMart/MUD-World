@@ -30,7 +30,7 @@ public class ClientFactory {
         System.out.println("\nWhat is your name, adventurer? :^)");
         Client client = new Client(host, port, getUsername());
 
-        client.join();
+        client.connect();
         client.menu();
 
     }

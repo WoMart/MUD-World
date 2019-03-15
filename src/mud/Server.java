@@ -16,7 +16,6 @@ public class Server implements ServerInterface {
 
     private List<String> users = new ArrayList<>();
     private Map<String, MUD> mudMap= new HashMap<>();
-    private MUD cur_mud = null;
 
 
     Server(int registry, int server) throws RemoteException{
@@ -27,6 +26,10 @@ public class Server implements ServerInterface {
         this.mudMap.put(mud1, new MUD());
         this.mudMap.put(mud2, new MUD());
 
+    }
+
+    private MUD getMUD(String name) {
+        return mudMap.get(name);
     }
 
     private void createServer(int registry, int server) throws RemoteException {
@@ -67,6 +70,12 @@ public class Server implements ServerInterface {
         return true;
     }
 
+    public boolean joinMUD(String name) {
+        if (!mudMap.containsKey(name))
+            return false;
+        return true;
+    }
+
     public String listMUD() throws RemoteException{
         String list = "Available MUDs:\n";
         for(String s : mudMap.keySet())
@@ -92,24 +101,24 @@ public class Server implements ServerInterface {
         return online + "\n";
     }
 
-    public String startLocation() {
-        return this.cur_mud.startLocation();
+    public String startLocation(String mud) {
+        return this.getMUD(mud).startLocation();
     }
 
-    public String commandLook(String loc) {
-        return this.cur_mud.locationInfo(loc);
+    public String commandLook(String mud, String loc) {
+        return this.getMUD(mud).locationInfo(loc);
     }
 
-    public String commandMove(String loc, String dir, String user) {
-        return this.cur_mud.moveThing(loc, dir, user);
+    public String commandMove(String mud, String loc, String dir, String user) {
+        return this.getMUD(mud).moveThing(loc, dir, user);
     }
 
-    public boolean commandTake(String loc, String thing) {
-        return this.cur_mud.takeThing(loc, thing);
+    public boolean commandTake(String mud, String loc, String thing) {
+        return this.getMUD(mud).takeThing(loc, thing);
     }
 
-    public void commandDrop(String loc, String thing) {
-        this.cur_mud.dropThing(loc, thing);
+    public void commandDrop(String mud, String loc, String thing) {
+        this.getMUD(mud).dropThing(loc, thing);
     }
 
 
