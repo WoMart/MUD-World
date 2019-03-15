@@ -40,17 +40,36 @@ public class Client implements ClientInterface {
 
     public void join() throws RemoteException {
         this.server.addUser(this.username);
-        System.out.println("[" + this.username + "]Connected to " + this.hostname);
+        System.out.println("[" + this.username + "] You have connected to " + this.hostname);
     }
 
-    public void quit() throws RemoteException {
+    private void quit() throws RemoteException {
         this.ingame = false;
         this.server.removeUser(this.username);
         System.out.println("[" + this.username + "]Disconnected from " + this.hostname);
     }
 
-    public void whoIsOnline() throws RemoteException {
+    private void whoIsOnline() throws RemoteException {
         System.out.println(this.server.usersOnline());
+    }
+
+    private void look(String loc) throws RemoteException {
+        System.out.println(
+                this.server.commandLook(loc)
+        );
+    }
+
+    private void move(String dir) throws RemoteException {
+        String loc = this.server.commandMove(
+                this.location,
+                dir,
+                this.username );
+        if (this.location.equals(loc))
+            System.out.println("You bashed into a tree...");
+        else
+            this.location = loc;
+
+        System.out.println("You are currently in " + this.location);
     }
 
 
@@ -59,22 +78,37 @@ public class Client implements ClientInterface {
         this.ingame = true;
         this.location = this.server.startLocation();
 
+        System.out.println("\nType 'help' to see available commands");
+
         while (ingame) {
-            System.out.print("\nI desire to ");
+            System.out.print("[" + this.username + "]>>> ");
             String action = in.nextLine().trim().toLowerCase();
 
-            switch(action) {
+            if (action.startsWith("move")) {
+                this.move(action.split(" ")[1]);
+            }
 
-                case "exit":
-                case "quit":
-                    System.out.print("Are you sure you want to exit the game?\nEnter 'yes' to confirm: ");
-                    if (in.nextLine().trim().toLowerCase().startsWith("yes"))
-                        this.quit();
-                    break;
+            else if (action.equals("look")) {
+                this.look(this.location);
+            }
+            else if (action.equals("help")) {
+                System.out.println("\thelp\t\tshows this menu\n\n"
+                        + "\texit\n\tquit\t\tleaves the game\n\n"
+                        + "\tuserlist\tsee who is online\n\n"
+                        + "\tlook\t\tlook around you\n\n");
 
-                default:
-                    System.out.println("But to no avail...");
-                    break;
+            }
+            else if (action.equals("userlist")) {
+                this.whoIsOnline();
+
+            }
+            else if (action.equals("exit") || action.equals("quit")) {
+                System.out.print("Are you sure you want to exit the game?\nEnter 'yes' to confirm: ");
+                if (in.nextLine().trim().toLowerCase().startsWith("yes"))
+                    this.quit();
+            }
+            else {
+                System.out.println("But to no avail...");
             }
         }
     }

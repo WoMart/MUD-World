@@ -53,25 +53,33 @@ public class Server implements ServerInterface {
         }
     }
 
-    public void addUser(String username) throws RemoteException {
+    public void addUser(String username) {
         this.users.add(username);
         System.out.println("User: '" + username + "' is now online.");
     }
 
-    public void removeUser(String username) throws RemoteException {
+    public void removeUser(String username) {
         this.users.remove(username);
         System.out.println("User: '" + username + "' is now offline.");
     }
 
-    public String usersOnline() throws RemoteException {
+    public String usersOnline() {
         String online = "\nUsers online:";
         for(String user : this.users)
             online += "\n\t*" + user;
         return online + "\n";
     }
 
-    public String startLocation() throws RemoteException {
+    public String startLocation() {
         return this.mud.startLocation();
+    }
+
+    public String commandLook(String loc) {
+        return this.mud.locationInfo(loc);
+    }
+
+    public String commandMove(String loc, String dir, String user) {
+        return this.mud.moveThing(loc, dir, user);
     }
 
     public String test() { return "this is a server"; }

@@ -27,7 +27,7 @@ public class ClientFactory {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
 
-        System.out.println("\nWould you like to listen to my story? :^)");
+        System.out.println("\nWhat is your name, adventurer? :^)");
         Client client = new Client(host, port, getUsername());
 
         client.join();
