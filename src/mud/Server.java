@@ -8,19 +8,24 @@ import java.rmi.server.UnicastRemoteObject;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Server implements ServerInterface {
 
-    private List<String> users;
-    private MUD mud;
+    private List<String> users = new ArrayList<>();
+    private Map<String, MUD> mudMap= new HashMap<>();
+    private MUD cur_mud = null;
 
 
     Server(int registry, int server) throws RemoteException{
-        this.users = new ArrayList<>();
         createServer(registry, server);
-        this.mud = new MUD();
-        System.out.println(this.mud.toString());
+
+        String mud1 = "MUD 1";
+        String mud2 = "MUD 2";
+        this.mudMap.put(mud1, new MUD());
+        this.mudMap.put(mud2, new MUD());
 
     }
 
@@ -53,6 +58,10 @@ public class Server implements ServerInterface {
         }
     }
 
+    private void createMUD(String name) {
+        mudMap.put(name, new MUD());
+    }
+
     public void addUser(String username) {
         this.users.add(username);
         System.out.println("User: '" + username + "' is now online.");
@@ -71,16 +80,25 @@ public class Server implements ServerInterface {
     }
 
     public String startLocation() {
-        return this.mud.startLocation();
+        return this.cur_mud.startLocation();
     }
 
     public String commandLook(String loc) {
-        return this.mud.locationInfo(loc);
+        return this.cur_mud.locationInfo(loc);
     }
 
     public String commandMove(String loc, String dir, String user) {
-        return this.mud.moveThing(loc, dir, user);
+        return this.cur_mud.moveThing(loc, dir, user);
     }
+
+    public boolean commandTake(String loc, String thing) {
+        return this.cur_mud.takeThing(loc, thing);
+    }
+
+    public void commandDrop(String loc, String thing) {
+        this.cur_mud.dropThing(loc, thing);
+    }
+
 
     public String test() { return "this is a server"; }
 }

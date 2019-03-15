@@ -31,7 +31,7 @@ public class ClientFactory {
         Client client = new Client(host, port, getUsername());
 
         client.join();
-        client.play();
+        client.menu();
 
     }
 }

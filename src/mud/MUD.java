@@ -251,6 +251,25 @@ public class MUD
     }
 
 	/**
+	 * A method to enable a player to pick up an item.
+	 * Returns the item.
+	 */
+	public boolean takeThing( String loc, String thing )
+	{
+		Vertex v = getVertex(loc);
+		if (!v._things.contains(thing))
+			return false;
+		v._things.remove(thing);
+		return true;
+	}
+
+	public void dropThing( String loc, String thing)
+	{
+		Vertex v = getVertex(loc);
+		v._things.add(thing);
+	}
+
+	/**
 	 * This method enables us to display the entire mud.MUD (mostly used
 	 * for testing purposes so that we can check that the structure
 	 * defined has been successfully parsed.

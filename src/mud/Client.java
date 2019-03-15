@@ -4,7 +4,10 @@ import java.rmi.Naming;
 
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Client implements ClientInterface {
@@ -15,7 +18,8 @@ public class Client implements ClientInterface {
 
     private String username;
     private String location;
-    private boolean ingame;
+    private List<String> inventory = new ArrayList<>();
+    private boolean ingame = false;
 
     public Client(String h, int p, String u) throws RemoteException {
         this.hostname = h;
@@ -72,6 +76,60 @@ public class Client implements ClientInterface {
         System.out.println("You are currently in " + this.location);
     }
 
+    private void take(String thing) throws RemoteException {
+        if (this.server.commandTake(this.location, thing)) {
+            this.inventory.add(thing);
+            System.out.println(" You have put " + thing + " in your inventory.");
+        }
+        else
+            System.out.println(" Turns out " + thing + " was just an illusion.");
+    }
+
+    private void drop(String thing) throws RemoteException {
+        if (!this.inventory.contains(thing)) {
+            System.out.println("There is no " + thing + " in your inventory");
+            return;
+        }
+        System.out.println(" You have dropped " + thing + " in " + this.location + ".");
+        this.server.commandDrop(this.location, thing);
+        this.inventory.remove(thing);
+
+    }
+
+    private void inventory() {
+        if(this.inventory.isEmpty()) {
+            System.out.println("\nYour inventory is currently empty. Lots of space for loot!\n");
+            return;
+        }
+
+        String inv = "\nYour inventory:\n";
+        for(String i : this.inventory)
+            inv += "\t*" + i + "\n";
+        System.out.println(inv);
+    }
+
+    public void menu() throws RemoteException {
+        Scanner in = new Scanner(System.in);
+        this.ingame = false;
+
+        while(!this.ingame) {
+            System.out.println("\n\\\\\\ Welcome to the MUD World ///" +
+                    "\nMenu ( input the command in [] to choose the option ):" +
+                    "\n\t1. Join MUD\t[ join <mud_name> ]" +
+                    "\n\t2. Crete MUD\t[ create <new_name> ] // TODO" +
+                    "\n\t3. List MUDs\t[ list ] // TODO" +
+                    "\n\t4. Exit\t[ exit ]" +
+                    "*********************************************************\n"
+            );
+
+            String action = in.nextLine().trim().toLowerCase();
+
+            if (action.equals("exit")){
+                System.out.println("\nQuitting MUD World");
+                return;
+            }
+        }
+    }
 
     public void play() throws RemoteException {
         Scanner in = new Scanner(System.in);
@@ -86,6 +144,20 @@ public class Client implements ClientInterface {
 
             if (action.startsWith("move")) {
                 this.move(action.split(" ")[1]);
+            }
+
+            else if (action.startsWith("take")) {
+                this.take(action.split(" ")[1]);
+            }
+
+            else if (action.startsWith("drop")) {
+                this.drop(action.split(" ")[1]);
+            }
+
+            else if (action.equals("i")
+                    | action.equals("inv")
+                    | action.equals("inventory")) {
+                this.inventory();
             }
 
             else if (action.equals("look")) {

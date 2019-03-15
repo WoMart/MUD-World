@@ -12,7 +12,13 @@ public interface ServerInterface extends Remote {
     String startLocation() throws RemoteException;
 
     String commandLook(String loc) throws RemoteException;
-    String commandMove(String loc, String dir, String user) throws RemoteException;
+    String commandMove(String loc,
+                       String dir,
+                       String user) throws RemoteException;
+    boolean commandTake(String loc,
+                       String thing) throws RemoteException;
+    void commandDrop(String loc,
+                     String thing) throws RemoteException;
 
     String test() throws RemoteException;
 }
