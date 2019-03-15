@@ -11,6 +11,9 @@ public interface ServerInterface extends Remote {
 
     String startLocation() throws RemoteException;
 
+    String listMUD() throws RemoteException;
+    boolean createMUD(String name) throws RemoteException;
+
     String commandLook(String loc) throws RemoteException;
     String commandMove(String loc,
                        String dir,

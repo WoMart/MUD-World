@@ -108,26 +108,58 @@ public class Client implements ClientInterface {
         System.out.println(inv);
     }
 
-    public void menu() throws RemoteException {
+    private String[] getInput(){
         Scanner in = new Scanner(System.in);
+        System.out.print("[" + this.username + "]>>> ");
+        String[] input = in.nextLine().trim().split(" ", 2);
+        String[] output = { "", "" };
+
+        try { output[0] = input[0].toLowerCase(); }
+        catch (IndexOutOfBoundsException ignored) { }
+
+        try { output[1] = input[1]; }
+        catch (IndexOutOfBoundsException ignored) { }
+
+        return output;
+    }
+
+    public void menu() throws RemoteException {
         this.ingame = false;
-
+        String message = "";
         while(!this.ingame) {
-            System.out.println("\n\\\\\\ Welcome to the MUD World ///" +
+            System.out.println("\n\t\\\\\\ Welcome to the MUD World ///" +
                     "\nMenu ( input the command in [] to choose the option ):" +
-                    "\n\t1. Join MUD\t[ join <mud_name> ]" +
-                    "\n\t2. Crete MUD\t[ create <new_name> ] // TODO" +
+                    "\n\t1. Join MUD\t\t[ join <mud_name> ]" +
+                    "\n\t2. Create MUD\t[ create <new_name> ] // TODO" +
                     "\n\t3. List MUDs\t[ list ] // TODO" +
-                    "\n\t4. Exit\t[ exit ]" +
-                    "*********************************************************\n"
-            );
+                    "\n\t4. Exit\t\t\t[ exit ]" +
+                    "\n*********************************************************\n\n" +
+                    message
+            ); message = "";
 
-            String action = in.nextLine().trim().toLowerCase();
+            String[] input = this.getInput();
+            String action = input[0];
+            String attribute = input[1];
 
-            if (action.equals("exit")){
+            if (action.startsWith("join") & !attribute.equals("")) {
+                System.out.println(attribute);
+            }
+            else if (action.startsWith("create") & !attribute.equals("")) {
+                if (this.server.createMUD(attribute))
+                    message = "The MUD " + attribute + " has been created";
+                else
+                    message = "The MUD" + attribute + " already exists";
+            }
+            else if (action.equals("list")) {
+                message = this.server.listMUD();
+            }
+            else if (action.equals("exit")){
                 System.out.println("\nQuitting MUD World");
+                this.quit();
                 return;
             }
+            else message = "What does he mean?";
+
         }
     }
 
@@ -143,15 +175,15 @@ public class Client implements ClientInterface {
             String action = in.nextLine().trim().toLowerCase();
 
             if (action.startsWith("move")) {
-                this.move(action.split(" ")[1]);
+                this.move(action.split(" ", 2)[1]);
             }
 
             else if (action.startsWith("take")) {
-                this.take(action.split(" ")[1]);
+                this.take(action.split(" ", 2)[1]);
             }
 
             else if (action.startsWith("drop")) {
-                this.drop(action.split(" ")[1]);
+                this.drop(action.split(" ", 2)[1]);
             }
 
             else if (action.equals("i")

@@ -58,8 +58,21 @@ public class Server implements ServerInterface {
         }
     }
 
-    private void createMUD(String name) {
+    public boolean createMUD(String name) {
+        if (mudMap.containsKey(name))
+            return false;
+
         mudMap.put(name, new MUD());
+        System.out.println("Created MUD " + name);
+        return true;
+    }
+
+    public String listMUD() throws RemoteException{
+        String list = "Available MUDs:\n";
+        for(String s : mudMap.keySet())
+            list += "\t" + s + "\n";
+        System.out.println(list);
+        return list;
     }
 
     public void addUser(String username) {
