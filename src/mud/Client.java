@@ -181,25 +181,25 @@ public class Client implements ClientInterface {
 
     public void play() throws RemoteException {
         Scanner in = new Scanner(System.in);
-        this.ingame = true;
         this.location = this.server.startLocation(this.cur_mud);
-
         System.out.println("\nType 'help' to see available commands");
 
+        this.ingame = true;
         while (ingame) {
-            System.out.print("[" + this.username + "]>>> ");
-            String action = in.nextLine().trim().toLowerCase();
+            String[] input = this.getInput();
+            String action = input[0];
+            String attribute = input[1];
 
             if (action.startsWith("move")) {
-                this.move(action.split(" ", 2)[1]);
+                this.move(attribute);
             }
 
             else if (action.startsWith("take")) {
-                this.take(action.split(" ", 2)[1]);
+                this.take(attribute);
             }
 
             else if (action.startsWith("drop")) {
-                this.drop(action.split(" ", 2)[1]);
+                this.drop(attribute);
             }
 
             else if (action.equals("i")
@@ -223,8 +223,8 @@ public class Client implements ClientInterface {
 
             }
             else if (action.equals("exit") || action.equals("quit")) {
-                System.out.print("Are you sure you want to exit the game?\nEnter 'yes' to confirm: ");
-                if (in.nextLine().trim().toLowerCase().startsWith("yes")) {
+                System.out.println("Are you sure you want to exit the game?\nEnter 'yes' to confirm: ");
+                if ( (this.getInput()[0]).equals("yes") ) {
                     this.ingame = false;
                     this.quit();
                 }
