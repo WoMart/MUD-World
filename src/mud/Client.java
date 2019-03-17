@@ -1,5 +1,8 @@
 package mud;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.List;
@@ -119,14 +122,16 @@ public class Client implements ClientInterface {
     }
 
     private String[] getInput(){
-        Scanner in = new Scanner(System.in);
+        BufferedReader in = new BufferedReader( new InputStreamReader(System.in) );
         System.out.print("[" + this.username + "]>>> ");
-        String[] input = in.nextLine().trim().split(" ", 2);
-        String[] output = { "", "" };
 
+        String[] input = { "" };
+        try { input = in.readLine().toString().split(" ", 2); }
+        catch ( IOException e ) { System.err.println(e + " in getInput()"); }
+
+        String[] output = { "", "" };
         try { output[0] = input[0].toLowerCase(); }
         catch (IndexOutOfBoundsException ignored) { }
-
         try { output[1] = input[1]; }
         catch (IndexOutOfBoundsException ignored) { }
 

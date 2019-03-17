@@ -1,15 +1,20 @@
 package mud;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class ClientFactory {
 
     private static String getUsername() {
-        Scanner in = new Scanner(System.in);
+        BufferedReader in = new BufferedReader( new InputStreamReader(System.in) );
         System.out.print("My name is: ");
-        String name = in.nextLine().trim();
-        if (name.length() > 12 | name.contains(" ")) {
+        String name = "";
+        try { name = in.readLine().trim(); }
+        catch (IOException e) { System.err.println(e + " in getUsername()"); }
+        if (name.length() < 3 | name.length() > 12 | name.contains(" ")) {
             System.out.println("Hmm...\nBut nobody would remember that. Let me start again. [Max character name: 12 | No spaces]");
             return getUsername();
         }
