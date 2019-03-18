@@ -57,16 +57,23 @@ public class Server implements ServerInterface {
         }
     }
 
-    public boolean createMUD(String name) {
-        if (mudMap.containsKey(name))
+    public boolean createMUD(String mud_name) {
+        if (mudMap.containsKey(mud_name))
             return false;
-        mudMap.put(name, new MUD());
-        this.serverMessage("New MUD created: " + name + " by " + ".");
+        mudMap.put(mud_name, new MUD());
+        this.serverMessage("New MUD created: " + mud_name + " by " + ".");
         return true;
     }
 
-    public boolean joinMUD(String name) {
-        return mudMap.containsKey(name);
+    public boolean joinMUD(String mud_name, String username) {
+        if (!mudMap.containsKey(mud_name))
+            return false;
+        getMUD(mud_name).addPlayer(username);
+        return true;
+    }
+
+    public void leaveMUD(String mud_name, String loc, String username) {
+        this.getMUD(mud_name).removePlayer(loc, username);
     }
 
     public String listMUD() {
@@ -93,6 +100,10 @@ public class Server implements ServerInterface {
         return online.toString();
     }
 
+    public String usersInWorld(String mud_name) {
+        return this.getMUD(mud_name).listPlayers();
+    }
+
     public String startLocation(String mud_name) {
         return this.getMUD(mud_name).startLocation();
     }
@@ -102,7 +113,7 @@ public class Server implements ServerInterface {
     }
 
     public String commandMove(String mud_name, String loc, String dir, String user) {
-        return this.getMUD(mud_name).moveThing(loc, dir, user);
+        return this.getMUD(mud_name).movePlayer(loc, dir, user);
     }
 
     public boolean commandTake(String mud_name, String loc, String thing) {

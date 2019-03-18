@@ -31,7 +31,7 @@ public class Client {
 
         try {
             this.username = "What is your name?";
-            this.username = getInput()[0];  //TODO: make a getUsername()
+            this.username = getInput()[0];
             this.hostname = h;
             this.port = p;
             this.connect();
@@ -65,14 +65,15 @@ public class Client {
     }
 
     private void quit() throws RemoteException {
+        this.server.leaveMUD(this.cur_mud, this.location, this.username);
         this.ingame = false;
-        this.location = null;
-        this.cur_mud = null;
-        this.inventory = null;
+        this.location = "";
+        this.cur_mud = "";
+        this.inventory.clear();
     }
 
-    private void whoIsOnline() throws RemoteException {
-        System.out.println( this.server.usersOnline() );
+    private String whoIsOnline() throws RemoteException {
+        return this.server.usersOnline();
     }
 
     private void look(String loc) throws RemoteException {
@@ -96,10 +97,10 @@ public class Client {
     private void take(String thing) throws RemoteException {
         if (this.server.commandTake(this.cur_mud, this.location, thing)) {
             this.inventory.add(thing);
-            System.out.println(" You have put " + thing + " in your inventory.");
+            System.out.println("You have put " + thing + " in your inventory.");
         }
         else
-            System.out.println(" Turns out " + thing + " was just an illusion.");
+            System.out.println("Turns out " + thing + " was just an illusion.");
     }
 
     private void drop(String thing) throws RemoteException {
@@ -133,10 +134,11 @@ public class Client {
                 System.out.println(
                         "\n\t\\\\\\ Welcome to the MUD World ///" +
                                 "\nMenu ( input the command in [] to choose the option ):" +
-                                "\n\t1. Join MUD\t\t[ join <mud_name> ]" +
-                                "\n\t2. Create MUD\t[ create <new_name> ] // TODO" +
-                                "\n\t3. List MUDs\t[ list ] // TODO" +
-                                "\n\t4. Exit\t\t\t[ exit ]" +
+                                "\n\t1. Join MUD\t\t\t[ join <mud_name> ]" +
+                                "\n\t2. Create MUD\t\t[ create <new_name> ]" +
+                                "\n\t3. List MUDs\t\t[ muds ]" +
+                                "\n\t4. Players Online\t[ users ]" +
+                                "\n\t5. Exit\t\t\t\t[ exit ]" +
                                 "\n*********************************************************\n\n" +
                                 message);
 
@@ -145,7 +147,7 @@ public class Client {
                 String attribute = input[1];
 
                 if (action.startsWith("join") & !attribute.equals("")) {
-                    if (this.server.joinMUD(attribute)) {
+                    if (this.server.joinMUD(attribute, this.username)) {
                         message = "Joining the MUD " + attribute;
                         this.cur_mud = attribute;
                         this.play();
@@ -156,8 +158,10 @@ public class Client {
                         message = "The MUD " + attribute + " has been created";
                     else
                         message = "The MUD" + attribute + " already exists";
-                } else if (action.equals("list")) {
+                } else if (action.equals("muds")) {
                     message = this.server.listMUD();
+                } else if (action.equals("users")) {
+                    message = this.whoIsOnline();
                 } else if (action.equals("exit")) {
                     this.inmenu = false;
                     System.out.println("\nQuitting MUD World");
@@ -181,33 +185,45 @@ public class Client {
 
                 if (action.startsWith("move")) {
                     this.move(attribute);
-                } else if (action.startsWith("take")) {
+                }
+                else if (action.startsWith("take")) {
                     this.take(attribute);
-                } else if (action.startsWith("drop")) {
+                }
+                else if (action.startsWith("drop")) {
                     this.drop(attribute);
-                } else if (action.equals("i")
+                }
+                else if (action.equals("i")
                         | action.equals("inv")
                         | action.equals("inventory")) {
                     this.inventory();
-                } else if (action.equals("look")) {
+                }
+                else if (action.equals("look")) {
                     this.look(this.location);
-                } else if (action.equals("help")) {
+                }
+                else if (action.equals("help")) {
                     System.out.println("\thelp\t\tshows this menu\n\n"
                             + "\texit\n\tquit\t\tleaves the game\n\n"
                             + "\tuserlist\tsee who is online\n\n"
                             + "\tlook\t\tlook around you\n\n");
 
-                } else if (action.equals("userlist")) {
-                    this.whoIsOnline();
-
-                } else if (action.equals("exit") || action.equals("quit")) {
+                }
+                else if (action.equals("online")) {
+                    System.out.println( this.whoIsOnline() );
+                }
+                else if (action.equals("players")) {
+                    System.out.println(
+                            this.server.usersInWorld(this.cur_mud)
+                    );
+                }
+                else if (action.equals("exit") || action.equals("quit")) {
                     System.out.println("Are you sure you want to exit the game?\nEnter 'yes' to confirm: ");
                     if ((this.getInput()[0]).equals("yes")) {
                         this.ingame = false;
                         this.quit();
                         this.menu();
                     }
-                } else {
+                }
+                else {
                     System.out.println("But to no avail...");
                 }
             }

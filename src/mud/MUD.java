@@ -5,10 +5,7 @@ import java.io.Serializable;
 import java.io.IOException;
 import java.io.FileReader;
 
-import java.util.StringTokenizer;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A class that can be used to represent a mud.MUD; essenially, this is a
@@ -19,6 +16,7 @@ public class MUD implements Serializable
 	// Map of all locations: name -> location( vertex )
 	private Map<String,Vertex> vertexMap = new HashMap<>();
     private String startLocation = "";
+    private List<String> players = new ArrayList<>();
 
     // Add a new path( edge ) between two locations
     private void addEdge( String source, String destination, String direction, String view )
@@ -188,15 +186,36 @@ public class MUD implements Serializable
     }
 
     // Move between locations
-    public String moveThing( String loc, String dir, String thing )
+    public String movePlayer(String loc, String dir, String name )
     {
 		Vertex v = getVertex( loc );
 		Edge e = v._routes.get( dir );
 		if (e == null)   // if there is no route in that direction
 			return loc;  // no move is made; return current location.
-		v._things.remove( thing );
-		e._dest._things.add( thing );
+		v.removePlayer(name);
+		e._dest.addPlayer( name );
 		return e._dest._name;
+    }
+
+    public void addPlayer(String name) {
+    	Vertex v = getVertex(this.startLocation);
+    	v.addPlayer(name);
+    	this.players.add(name);
+	}
+
+	public void removePlayer(String loc, String name) {
+    	Vertex v = getVertex(loc);
+    	v.removePlayer(name);
+		this.players.remove(name);
+	}
+
+	public String listPlayers() {
+    	int player_count = 0;
+    	StringBuilder list = new StringBuilder("\nHeroes in this world:\n\t");
+    	for(String player : this.players)
+			list.append(++player_count).append(". ").append(player).append("\n\t");
+		list.append("\n\t").append(player_count).append(" users in the world.\n\n");
+		return list.toString();
     }
 
 	// Pick up an item
