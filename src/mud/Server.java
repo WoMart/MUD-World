@@ -21,6 +21,7 @@ public class Server implements ServerInterface {
     Server(int registry, int server) throws RemoteException{
         createServer(registry, server);
         this.serverMessage("Your server is running...");
+        this.createMUD("default");
     }
 
     private MUD getMUD(String name) {
@@ -56,7 +57,7 @@ public class Server implements ServerInterface {
         }
     }
 
-    public boolean createMUD(String name) throws RemoteException {
+    public boolean createMUD(String name) {
         if (mudMap.containsKey(name))
             return false;
         mudMap.put(name, new MUD());
@@ -65,16 +66,14 @@ public class Server implements ServerInterface {
     }
 
     public boolean joinMUD(String name) {
-        if (!mudMap.containsKey(name))
-            return false;
-        return true;
+        return mudMap.containsKey(name);
     }
 
-    public String listMUD() throws RemoteException{
-        String list = "Available MUDs:\n";
+    public String listMUD() {
+        StringBuilder list = new StringBuilder("Available MUDs:\n");
         for(String s : mudMap.keySet())
-            list += "\t" + s + "\n";
-        return list;
+            list.append("\t").append(s).append("\n");
+        return list.toString();
     }
 
     public void addUser(String username) {
@@ -88,35 +87,38 @@ public class Server implements ServerInterface {
     }
 
     public String usersOnline() {
-        String online = "\nUsers online:";
+        StringBuilder online = new StringBuilder("\nUsers online:\n");
         for(String user : this.users)
-            online += "\n\t*" + user;
-        return online + "\n";
+            online.append("\t*").append(user).append("\n");
+        return online.toString();
     }
 
-    public String startLocation(String mud) {
-        return this.getMUD(mud).startLocation();
+    public String startLocation(String mud_name) {
+        return this.getMUD(mud_name).startLocation();
     }
 
-    public String commandLook(String mud, String loc) {
-        return this.getMUD(mud).locationInfo(loc);
+    public String commandLook(String mud_name, String loc) {
+        return this.getMUD(mud_name).locationInfo(loc);
     }
 
-    public String commandMove(String mud, String loc, String dir, String user) {
-        return this.getMUD(mud).moveThing(loc, dir, user);
+    public String commandMove(String mud_name, String loc, String dir, String user) {
+        return this.getMUD(mud_name).moveThing(loc, dir, user);
     }
 
-    public boolean commandTake(String mud, String loc, String thing) {
-        return this.getMUD(mud).takeThing(loc, thing);
+    public boolean commandTake(String mud_name, String loc, String thing) {
+        return this.getMUD(mud_name).takeThing(loc, thing);
     }
 
-    public void commandDrop(String mud, String loc, String thing) {
-        this.getMUD(mud).dropThing(loc, thing);
+    public void commandDrop(String mud_name, String loc, String thing) {
+        this.getMUD(mud_name).dropThing(loc, thing);
     }
 
+    /**
+     * Helper function to standardise the output messages
+     * Format: "[Time] Message"
+     */
     private void serverMessage(String msg) {
         DateFormat df = new SimpleDateFormat("dd/mm/yy HH:mm:ss");
-        Date cur_date = new Date();
-        System.out.println( "[" + df.format(cur_date) + "] " + msg );
+        System.out.println( "[" + df.format( new Date() ) + "] " + msg );
     }
 }

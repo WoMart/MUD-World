@@ -1,69 +1,51 @@
-package mud; /***********************************************************************
- * cs3524.solutions.mud.mud.MUD
- ***********************************************************************/
+package mud;
 
-import java.io.FileReader;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.Serializable;
-import java.util.StringTokenizer;
+import java.io.IOException;
+import java.io.FileReader;
 
+import java.util.StringTokenizer;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class that can be used to represent a mud.MUD; essenially, this is a
  * graph.
  */
-
 public class MUD implements Serializable
 {
-    /**
-     * Private stuff
-     */
+	// Map of all locations: name -> location( vertex )
+	private Map<String,Vertex> vertexMap = new HashMap<>();
+    private String startLocation = "";
 
-    // A record of all the vertices in the mud.MUD graph. HashMaps are not
-    // synchronized, but we don't really need this to be synchronised.
-    private Map<String,Vertex> vertexMap = new HashMap<String,Vertex>();
-
-    private String _startLocation = "";
-
-    /**
-     * Add a new edge to the graph.
-     */
-    private void addEdge( String sourceName, String destName, String direction, String view )
+    // Add a new path( edge ) between two locations
+    private void addEdge( String source, String destination, String direction, String view )
     {
-        Vertex v = getOrCreateVertex( sourceName );
-        Vertex w = getOrCreateVertex( destName );
+        Vertex v = getOrCreateVertex( source );
+        Vertex w = getOrCreateVertex( destination );
         v._routes.put( direction, new Edge( w, view ) );
     }
 
-    /**
-     * Create a new thing at a location.
-     */
+    // Create a new item in a location
     private void createThing( String loc, String thing )
     {
 		Vertex v = getOrCreateVertex( loc );
 		v._things.add( thing );
     }
 
-    /**
-     * Change the message associated with a location.
-     */
+    // Change the the location's description( view )
     private void changeMessage( String loc, String msg )
     {
 		Vertex v = getOrCreateVertex( loc );
 		v._msg = msg;
     }
 
-    /**
-     * If vertexName is not present, add it to vertexMap.  In either
-     * case, return the mud.Vertex. Used only for creating the mud.MUD.
-     */
+    // Return given location. Create a new one if it does not exist yet
     private Vertex getOrCreateVertex( String vertexName )
     {
-        Vertex v = vertexMap.get( vertexName );
+        Vertex v = getVertex( vertexName );
         if (v == null) {
             v = new Vertex( vertexName );
             vertexMap.put( vertexName, v );
@@ -71,18 +53,15 @@ public class MUD implements Serializable
         return v;
     }
 
-    /**
-     *
-     */
+    // Return given location
     private Vertex getVertex( String vertexName )
     {
 		return vertexMap.get( vertexName );
     }
 
     /**
-     * Creates the edges of the graph on the basis of a file with the
-     * following fromat:
-     * source direction destination message
+     * Records a map based on data from a given file ( e.g "mymud.edg" )
+     * Format of each line: source direction destination view
      */
     private void createEdges( String edgesfile )
     {
@@ -106,20 +85,16 @@ public class MUD implements Serializable
 				addEdge( source, dest, dir, msg );
 			}
 		}
-		catch( IOException e ) {
-			System.err.println( "Graph.createEdges( String " +
-					edgesfile + ")\n" + e.getMessage() );
-		}
+		catch( IOException e )
+		{ System.err.println( "Graph.createEdges( String " + edgesfile + ")\n" + e.getMessage() ); }
     }
 
     /**
-     * Records the messages assocated with vertices in the graph on
-     * the basis of a file with the following format:
-     * location message
-     * The first location is assumed to be the starting point for
-     * users joining the mud.MUD.
-     */
-    private void recordMessages( String messagesfile )
+     * Records locations' descriptions based on a given file ( e.g "mymud.msg" )
+     * The first location given becomes the starting location of the map
+	 * Format of each line: location message
+	 */
+    private void recordDescriptions(String messagesfile )
     {
 		try {
 			FileReader fin = new FileReader( messagesfile );
@@ -139,21 +114,20 @@ public class MUD implements Serializable
 
 				changeMessage( loc, msg );
 				if (first) {				// Record the start location.
-					_startLocation = loc;
+					startLocation = loc;
 					first = false;
 				}
 			}
 		}
 		catch( IOException e ) {
-			System.err.println( "Graph.recordMessages( String " +
+			System.err.println( "Graph.recordDescriptions( String " +
 					messagesfile + ")\n" + e.getMessage() );
 		}
     }
 
     /**
-     * Records the things assocated with vertices in the graph on
-     * the basis of a file with the following format:
-     * location thing1 thing2 ...
+     * Records items in each location
+     * Format: location thing1 thing2 ...
      */
     private void recordThings( String thingsfile )
     {
@@ -170,76 +144,50 @@ public class MUD implements Serializable
 				String loc = st.nextToken();
 				while (st.hasMoreTokens())
 					addThing( loc, st.nextToken());
-
 			}
 		}
-		catch( IOException e ) {
-			System.err.println( "Graph.recordThings( String " +
-					thingsfile + ")\n" + e.getMessage() );
-		}
+		catch( IOException e )
+		{ System.err.println( "Graph.recordThings( String " + thingsfile + ")\n" + e.getMessage() ); }
     }
 
-    /**
-     * All the public stuff. These methods are designed to hide the
-     * internal structure of the mud.MUD. Could declare these on an
-     * interface and have external objects interact with the mud.MUD via
-     * the interface.
-     */
-
-    /**
-     * A constructor that creates the mud.MUD.
-     */
-    public MUD()
+    MUD()
     {
-		createEdges( "static/mymud.edg" );
-		recordMessages( "static/mymud.msg" );
+    	createEdges( "static/mymud.edg" );
+		recordDescriptions( "static/mymud.msg" );
 		recordThings( "static/mymud.thg" );
 
 		System.out.println( "Files read..." );
 		System.out.println( vertexMap.size( ) + " vertices\n" );
     }
 
-
-    /**
-     * A method to provide a string describing a particular location.
-     */
+     // Returns location's description
     public String locationInfo( String loc )
     {
 		return getVertex( loc ).toString();
     }
 
-    /**
-     * Get the start location for new mud.MUD users.
-     */
+    // Returns MUD's start location
     public String startLocation()
     {
-		return _startLocation;
+		return startLocation;
     }
 
 
-    /**
-     * Add a thing to a location; used to enable us to add new users.
-     */
+    // Add an item in the location
     public void addThing( String loc, String thing )
     {
 		Vertex v = getVertex( loc );
 		v._things.add( thing );
     }
 
-    /**
-     * Remove a thing from a location.
-     */
+    // Remove an item from location
     public void delThing( String loc, String thing )
     {
 		Vertex v = getVertex( loc );
 		v._things.remove( thing );
     }
 
-    /**
-     * A method to enable a player to move through the mud.MUD (a player
-     * is a thing). Checks that there is a route to travel on. Returns
-     * the location moved to.
-     */
+    // Move between locations
     public String moveThing( String loc, String dir, String thing )
     {
 		Vertex v = getVertex( loc );
@@ -251,10 +199,7 @@ public class MUD implements Serializable
 		return e._dest._name;
     }
 
-	/**
-	 * A method to enable a player to pick up an item.
-	 * Returns the item.
-	 */
+	// Pick up an item
 	public boolean takeThing( String loc, String thing )
 	{
 		Vertex v = getVertex(loc);
@@ -264,6 +209,7 @@ public class MUD implements Serializable
 		return true;
 	}
 
+	// Drop an item
 	public void dropThing( String loc, String thing)
 	{
 		Vertex v = getVertex(loc);
@@ -283,9 +229,9 @@ public class MUD implements Serializable
 		while (iter.hasNext()) {
 			loc = (String)iter.next();
 			summary = summary + "Node: " + loc;
-			summary += ((Vertex)vertexMap.get( loc )).toString();
+			summary += ((Vertex)getVertex( loc )).toString();
 		}
-		summary += "Start location = " + _startLocation;
+		summary += "Start location = " + startLocation;
 		return summary;
 	}
 

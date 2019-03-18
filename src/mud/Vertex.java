@@ -12,17 +12,16 @@ import java.util.Iterator;
 // Represents a location in the mud.MUD (a vertex in the graph).
 class Vertex
 {
-    public String _name;				// mud.Vertex name
-    public String _msg = "";			// Message about this location
-    public Map<String,Edge> _routes;	// Association between direction
-				     					// (e.g. "north") and a path (mud.Edge)
-    public List<String> _things;    	// The things (e.g. players) at this location
+    String _name;				// mud.Vertex name
+    String _msg = "";			// Message about this location
+    Map<String,Edge> _routes;	// Association between direction
+								// (e.g. "north") and a path (mud.Edge)
+    List<String> _things;    	// The things (e.g. players) at this location
 
-    public Vertex( String nm )
-    {
+    Vertex( String nm ) {
 		_name = nm;
-		_routes = new HashMap<String,Edge>(); // Not synchronised
-		_things = new Vector<String>();       // Synchronised
+		_routes = new HashMap<>(); 		// Not synchronised
+		_things = new Vector<>();       // Synchronised
     }
 
     public String toString()

@@ -54,6 +54,7 @@ public class Client {
     }
 
     private void disconnect() throws RemoteException {
+        this.port = 0;
         this.server.removeUser(this.username);
         System.out.println("[" + this.username + "]Disconnected from " + this.hostname);
     }
@@ -71,13 +72,11 @@ public class Client {
     }
 
     private void whoIsOnline() throws RemoteException {
-        System.out.println(this.server.usersOnline());
+        System.out.println( this.server.usersOnline() );
     }
 
     private void look(String loc) throws RemoteException {
-        System.out.println(
-                this.server.commandLook(this.cur_mud, loc)
-        );
+        System.out.println( this.server.commandLook(this.cur_mud, loc) );
     }
 
     private void move(String dir) throws RemoteException {
@@ -115,15 +114,15 @@ public class Client {
     }
 
     private void inventory() {
-        if(this.inventory.isEmpty()) {
-            System.out.println("\nYour inventory is currently empty. Lots of space for loot!\n");
-            return;
+        StringBuilder inv = new StringBuilder("\nYour inventory");
+        if(this.inventory.isEmpty())
+            inv.append(" is currently empty. Lots of space for loot!\n");
+        else {
+            inv.append(":\n");
+            for (String item : this.inventory)
+                inv.append("\t*").append(item).append("\n");
         }
-
-        String inv = "\nYour inventory:\n";
-        for(String i : this.inventory)
-            inv += "\t*" + i + "\n";
-        System.out.println(inv);
+        System.out.println(inv.toString());
     }
 
     private void menu() throws RemoteException {

@@ -2,7 +2,7 @@ package mud;
 
 import java.rmi.RemoteException;
 
-public class ServerFactory {
+public class MUDWorldServer {
 
     public static void main(String[] args) throws RemoteException {
         if (args.length < 2) {
