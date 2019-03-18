@@ -1,5 +1,6 @@
 package mud;
 
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 
 
@@ -18,12 +19,17 @@ public class MUDWorld {
             System.exit(0);
         }
 
-
-        Client client = new Client(host, port);
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try { client.shutdown(); }
-            catch (RemoteException ignored)
-            { System.err.println("[SERVER CONNECTION LOST] Game shutdown"); }
-        }));
+        try {
+            Client client = new Client(host, port);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    client.shutdown();
+                } catch (RemoteException ignored) {
+                    System.err.println("[SERVER CONNECTION LOST] Game shutdown");
+                }
+            }));
+        }
+        catch (ConnectException ignored)
+        { System.err.println("[SERVER CONNECTION LOST] Server is not responding"); }
     }
 }

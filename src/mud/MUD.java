@@ -23,7 +23,7 @@ public class MUD implements Serializable
     {
         Vertex v = getOrCreateVertex( source );
         Vertex w = getOrCreateVertex( destination );
-        v._routes.put( direction, new Edge( w, view ) );
+        v.routes.put( direction, new Edge( w, view ) );
     }
 
     // Create a new item in a location
@@ -37,7 +37,7 @@ public class MUD implements Serializable
     private void changeMessage( String loc, String msg )
     {
 		Vertex v = getOrCreateVertex( loc );
-		v._msg = msg;
+		v.msg = msg;
     }
 
     // Return given location. Create a new one if it does not exist yet
@@ -189,12 +189,12 @@ public class MUD implements Serializable
     public String movePlayer(String loc, String dir, String name )
     {
 		Vertex v = getVertex( loc );
-		Edge e = v._routes.get( dir );
+		Edge e = v.routes.get( dir );
 		if (e == null)   // if there is no route in that direction
 			return loc;  // no move is made; return current location.
 		v.removePlayer(name);
 		e._dest.addPlayer( name );
-		return e._dest._name;
+		return e._dest.name;
     }
 
     public void addPlayer(String name) {
