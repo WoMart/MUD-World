@@ -22,6 +22,7 @@ public class Server implements ServerInterface {
         createServer(registry, server);
         this.serverMessage("Your server is running...");
         this.createMUD("default");
+        System.out.println(this.getMUD("default")); //TODO: remove after testing
     }
 
     private MUD getMUD(String name) {

@@ -15,29 +15,29 @@ public class MUD implements Serializable
 {
 	// Map of all locations: name -> location( vertex )
 	private Map<String,Vertex> vertexMap = new HashMap<>();
-    private String startLocation = "";
-    private List<String> players = new ArrayList<>();
+	private List<String> players = new ArrayList<>();
+	private String startLocation = "";
 
     // Add a new path( edge ) between two locations
     private void addEdge( String source, String destination, String direction, String view )
     {
         Vertex v = getOrCreateVertex( source );
         Vertex w = getOrCreateVertex( destination );
-        v.routes.put( direction, new Edge( w, view ) );
+        v.addRoute( direction, new Edge( w, view ) );
     }
 
     // Create a new item in a location
     private void createThing( String loc, String thing )
     {
 		Vertex v = getOrCreateVertex( loc );
-		v._things.add( thing );
+		v.addThing( thing );
     }
 
     // Change the the location's description( view )
     private void changeMessage( String loc, String msg )
     {
 		Vertex v = getOrCreateVertex( loc );
-		v.msg = msg;
+		v.setMessage(msg);
     }
 
     // Return given location. Create a new one if it does not exist yet
@@ -175,26 +175,26 @@ public class MUD implements Serializable
     public void addThing( String loc, String thing )
     {
 		Vertex v = getVertex( loc );
-		v._things.add( thing );
+		v.addThing( thing );
     }
 
     // Remove an item from location
     public void delThing( String loc, String thing )
     {
 		Vertex v = getVertex( loc );
-		v._things.remove( thing );
+		v.removeThing( thing );
     }
 
     // Move between locations
     public String movePlayer(String loc, String dir, String name )
     {
 		Vertex v = getVertex( loc );
-		Edge e = v.routes.get( dir );
+		Edge e = v.getRoute( dir );
 		if (e == null)   // if there is no route in that direction
 			return loc;  // no move is made; return current location.
 		v.removePlayer(name);
 		e._dest.addPlayer( name );
-		return e._dest.name;
+		return e._dest.getName();
     }
 
     public void addPlayer(String name) {
@@ -222,9 +222,9 @@ public class MUD implements Serializable
 	public boolean takeThing( String loc, String thing )
 	{
 		Vertex v = getVertex(loc);
-		if (!v._things.contains(thing))
+		if (!v.hasThing(thing))
 			return false;
-		v._things.remove(thing);
+		v.removeThing(thing);
 		return true;
 	}
 
@@ -232,7 +232,7 @@ public class MUD implements Serializable
 	public void dropThing( String loc, String thing)
 	{
 		Vertex v = getVertex(loc);
-		v._things.add(thing);
+		v.addThing(thing);
 	}
 
 	/**
