@@ -45,18 +45,24 @@ class Vertex {
 
     public String toString() {
     	StringBuilder summary = new StringBuilder("\n").append(this.description);
+
+    	// paths
 		Iterator iter = this.routes.keySet().iterator();
 		while (iter.hasNext()) {
 			String direction = iter.next().toString();
 			summary.append("\nTo the ").append(direction).append(" there is ")
 					.append( this.getView(direction) );
 		}
+
+		// items
 		iter = this.things.iterator();
 		if (iter.hasNext()) {
 			summary.append("\n\tItems around: ");
 			do { summary.append(iter.next()).append(" "); }
 			while (iter.hasNext());
 		}
+
+		// players
 		iter = this.players.iterator();
 		if (iter.hasNext()) {
 			summary.append("\n\tPlayers around: ");

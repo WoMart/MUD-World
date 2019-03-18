@@ -18,43 +18,36 @@ public class MUD implements Serializable
 	private List<String> players = new ArrayList<>();
 	private String startLocation = "";
 
-    // Add a new path( edge ) between two locations
-    private void addEdge( String source, String destination, String direction, String view ) {
-        Vertex v = getOrCreateVertex( source );
-        Vertex w = getOrCreateVertex( destination );
-        v.addRoute( direction, new Edge( w, view ) );
-    }
+	MUD() {
+		createEdges( "static/mymud.edg" );
+		recordDescriptions( "static/mymud.msg" );
+		recordThings( "static/mymud.thg" );
 
-    // Create a new item in a location
-    private void createThing( String loc, String thing ) {
-		Vertex v = getOrCreateVertex( loc );
-		v.addThing( thing );
-    }
+		System.out.println( "Files read..." );
+		System.out.println( vertexMap.size( ) + " vertices\n" );
+	}
 
-    // Change the the location's description( view )
-    private void changeMessage( String loc, String msg ) {
-		Vertex v = getOrCreateVertex( loc );
-		v.setDescription(msg);
-    }
+	// Returns MUD's start location
+	String getStartLocation() { return startLocation; }
 
-    // Return given location. Create a new one if it does not exist yet
-    private Vertex getOrCreateVertex( String vertexName ) {
-        Vertex v = getVertex( vertexName );
-        if (v == null) {
-            v = new Vertex( vertexName );
-            vertexMap.put( vertexName, v );
-        }
-        return v;
-    }
+	// Return given location. Create a new one if it does not exist yet
+	private Vertex getOrCreateVertex( String vertexName ) {
+		Vertex v = getVertex( vertexName );
+		if (v == null) {
+			v = new Vertex( vertexName );
+			vertexMap.put( vertexName, v );
+		}
+		return v;
+	}
 
-    // Return given location
-    private Vertex getVertex( String vertexName ) { return vertexMap.get( vertexName ); }
+	// Return given location
+	private Vertex getVertex( String vertexName ) { return vertexMap.get( vertexName ); }
 
-    /**
-     * Records a map based on data from a given file ( e.g "mymud.edg" )
-     * Format of each line: source direction destination view
-     */
-    private void createEdges( String edgesfile ) {
+	/**
+	 * Records a map based on data from a given file ( e.g "mymud.edg" )
+	 * Format of each line: source direction destination view
+	 */
+	private void createEdges( String edgesfile ) {
 		try {
 			FileReader fin = new FileReader( edgesfile );
 			BufferedReader edges = new BufferedReader( fin );
@@ -77,14 +70,14 @@ public class MUD implements Serializable
 		}
 		catch( IOException e )
 		{ System.err.println( "Graph.createEdges( String " + edgesfile + ")\n" + e.getMessage() ); }
-    }
+	}
 
-    /**
-     * Records locations' descriptions based on a given file ( e.g "mymud.msg" )
-     * The first location given becomes the starting location of the map
+	/**
+	 * Records locations' descriptions based on a given file ( e.g "mymud.msg" )
+	 * The first location given becomes the starting location of the map
 	 * Format of each line: location message
 	 */
-    private void recordDescriptions(String messagesfile ) {
+	private void recordDescriptions(String messagesfile ) {
 		try {
 			FileReader fin = new FileReader( messagesfile );
 			BufferedReader messages = new BufferedReader( fin );
@@ -112,13 +105,13 @@ public class MUD implements Serializable
 			System.err.println( "Graph.recordDescriptions( String " +
 					messagesfile + ")\n" + e.getMessage() );
 		}
-    }
+	}
 
-    /**
-     * Records items in each location
-     * Format: location thing1 thing2 ...
-     */
-    private void recordThings( String thingsfile ) {
+	/**
+	 * Records items in each location
+	 * Format: location thing1 thing2 ...
+	 */
+	private void recordThings( String thingsfile ) {
 		try {
 			FileReader fin = new FileReader( thingsfile );
 			BufferedReader things = new BufferedReader( fin );
@@ -136,39 +129,32 @@ public class MUD implements Serializable
 		}
 		catch( IOException e )
 		{ System.err.println( "Graph.recordThings( String " + thingsfile + ")\n" + e.getMessage() ); }
+	}
+
+	// Add a new path( edge ) between two locations
+    private void addEdge(String source, String destination, String direction, String view) {
+        Vertex v = getOrCreateVertex(source);
+        Vertex w = getOrCreateVertex(destination);
+        v.addRoute( direction, new Edge(w, view) );
     }
 
-    MUD()
-    {
-    	createEdges( "static/mymud.edg" );
-		recordDescriptions( "static/mymud.msg" );
-		recordThings( "static/mymud.thg" );
-
-		System.out.println( "Files read..." );
-		System.out.println( vertexMap.size( ) + " vertices\n" );
+    // Change the the location's description( view )
+    private void changeMessage( String loc, String msg ) {
+		Vertex v = getOrCreateVertex( loc );
+		v.setDescription(msg);
     }
 
-     // Returns location's description
-    public String locationInfo( String loc ) { return getVertex( loc ).toString(); }
-
-    // Returns MUD's start location
-    public String startLocation() { return startLocation; }
-
-
-    // Add an item in the location
-    public void addThing( String loc, String thing ) {
+	// Add an item in the location
+	private void addThing( String loc, String thing ) {
 		Vertex v = getVertex( loc );
 		v.addThing( thing );
-    }
+	}
 
-    // Remove an item from location
-    public void delThing( String loc, String thing ) {
-		Vertex v = getVertex( loc );
-		v.removeThing( thing );
-    }
+	// Returns location's description
+    String locationInfo( String loc ) { return getVertex( loc ).toString(); }
 
     // Move between locations
-    public String movePlayer(String loc, String dir, String name ) {
+    String movePlayer(String loc, String dir, String name ) {
 		Vertex v = getVertex( loc );
 		Edge e = v.getRoute( dir );
 		if (e == null)   // if there is no route in that direction
@@ -178,19 +164,19 @@ public class MUD implements Serializable
 		return e.getDest().getName();
     }
 
-    public void addPlayer(String name) {
+    void addPlayer(String name) {
     	Vertex v = getVertex(this.startLocation);
     	v.addPlayer(name);
     	this.players.add(name);
 	}
 
-	public void removePlayer(String loc, String name) {
+	void removePlayer(String loc, String name) {
     	Vertex v = getVertex(loc);
     	v.removePlayer(name);
 		this.players.remove(name);
 	}
 
-	public String listPlayers() {
+	String listPlayers() {
     	int player_count = 0;
     	StringBuilder list = new StringBuilder("\nHeroes in this world:\n\t");
     	for(String player : this.players)
@@ -200,7 +186,7 @@ public class MUD implements Serializable
     }
 
 	// Pick up an item
-	public boolean takeThing( String loc, String thing ) {
+	boolean takeThing( String loc, String thing ) {
 		Vertex v = getVertex(loc);
 		if (!v.hasThing(thing))
 			return false;
@@ -209,7 +195,7 @@ public class MUD implements Serializable
 	}
 
 	// Drop an item
-	public void dropThing( String loc, String thing) {
+	void dropThing( String loc, String thing) {
 		Vertex v = getVertex(loc);
 		v.addThing(thing);
 	}
@@ -220,15 +206,11 @@ public class MUD implements Serializable
 	 * defined has been successfully parsed.
 	 */
 	public String toString() {
-		String summary = "";
-		Iterator iter = vertexMap.keySet().iterator();
-		String loc;
-		while (iter.hasNext()) {
-			loc = (String)iter.next();
-			summary = summary + "Node: " + loc;
-			summary += ((Vertex)getVertex( loc )).toString();
-		}
-		summary += "Start location = " + startLocation;
-		return summary;
+		StringBuilder summary = new StringBuilder();
+		for ( String loc : this.vertexMap.keySet() )
+			summary.append("Node: ").append(loc)
+					.append( getVertex(loc).toString() );
+		summary.append("Start location: ").append(this.startLocation);
+		return summary.append("\n").toString();
 	}
 }

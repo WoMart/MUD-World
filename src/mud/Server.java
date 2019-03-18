@@ -106,7 +106,7 @@ public class Server implements ServerInterface {
     }
 
     public String startLocation(String mud_name) {
-        return this.getMUD(mud_name).startLocation();
+        return this.getMUD(mud_name).getStartLocation();
     }
 
     public String commandLook(String mud_name, String loc) {
