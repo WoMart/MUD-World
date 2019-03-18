@@ -21,7 +21,7 @@ public class Server implements ServerInterface {
     Server(int registry, int server) throws RemoteException{
         createServer(registry, server);
         this.serverMessage("Your server is running...");
-        this.createMUD("default");
+        this.createMUD("default", "admin");
         System.out.println(this.getMUD("default")); //TODO: remove after testing
     }
 
@@ -58,11 +58,11 @@ public class Server implements ServerInterface {
         }
     }
 
-    public boolean createMUD(String mud_name) {
+    public boolean createMUD(String mud_name, String username) {
         if (mudMap.containsKey(mud_name))
             return false;
         mudMap.put(mud_name, new MUD());
-        this.serverMessage("New MUD created: " + mud_name + " by " + ".");
+        this.serverMessage("New MUD " + mud_name + " created by " + username + ".");
         return true;
     }
 

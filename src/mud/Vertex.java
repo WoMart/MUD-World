@@ -1,74 +1,63 @@
 package mud;
-/***********************************************************************
- * cs3524.solutions.mud.mud.Vertex
- ***********************************************************************/
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
 import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Vector;
+import java.util.List;
+import java.util.Map;
 
 // Represents a location in the mud.MUD (a vertex in the graph).
-class Vertex
-{
-    private String name;					// mud.Vertex name
-    private String msg;				// Message about this location
-    private Map<String,Edge> routes;		// Association between direction
-									// (e.g. "north") and a path (mud.Edge)
-    private List<String> things;    // The things (e.g. players) at this location
-	private List<String> players;
+class Vertex {
 
-    Vertex( String nm ) {
+    private String name;				// mud.Vertex name
+    private String description;			// Message about this location
+    private Map<String,Edge> routes;	// Direction -> Path
+	private List<String> players;		// Players in this location
+	private List<String> things;    	// Items at this location
+
+    Vertex(String nm) {
 		this.name = nm;
-		this.msg = "";
+		this.description = "";
 		this.routes = new HashMap<>(); 		// Not synchronised
 		this.things = new Vector<>();       // Synchronised
 		this.players = new Vector<>();
     }
 
-    private String getView(String name) {
-    	return this.routes.get(name)._view;
-	}
+	String getName() { return this.name; }
 
-	public String getName() { return this.name; }
+	void setDescription(String msg) { this.description = msg; }
 
-	public void setMessage(String msg) { this.msg = msg; }
+	void addRoute(String dir, Edge e) { this.routes.put(dir, e); }
 
-	public void addRoute(String dir, Edge e) { this.routes.put(dir, e); }
+	Edge getRoute(String dir) { return this.routes.get(dir); }
 
-	public Edge getRoute(String dir) { return this.routes.get(dir); }
+	void addPlayer(String name) { this.players.add(name); }
 
-	public void addThing(String thing) { this.things.add(thing); }
+	void removePlayer(String name) { this.players.remove(name); }
 
-	public void removeThing(String thing) { this.things.remove(thing); }
+	void addThing(String thing) { this.things.add(thing); }
 
-	public boolean hasThing(String thing) { return this.things.contains(thing); }
+	void removeThing(String thing) { this.things.remove(thing); }
 
-	public void addPlayer(String name) {
-    	players.add(name);
-	}
+	boolean hasThing(String thing) { return this.things.contains(thing); }
 
-	public void removePlayer(String name) {
-    	players.remove(name);
-	}
+	private String getView(String name) { return ( this.routes.get(name) ).getView(); }
 
-    public String toString()
-    {
-    	StringBuilder summary = new StringBuilder("\n").append(msg);
-		Iterator iter = routes.keySet().iterator();
+    public String toString() {
+    	StringBuilder summary = new StringBuilder("\n").append(this.description);
+		Iterator iter = this.routes.keySet().iterator();
 		while (iter.hasNext()) {
 			String direction = iter.next().toString();
 			summary.append("\nTo the ").append(direction).append(" there is ")
 					.append( this.getView(direction) );
 		}
-		iter = things.iterator();
+		iter = this.things.iterator();
 		if (iter.hasNext()) {
 			summary.append("\n\tItems around: ");
 			do { summary.append(iter.next()).append(" "); }
 			while (iter.hasNext());
 		}
-		iter = players.iterator();
+		iter = this.players.iterator();
 		if (iter.hasNext()) {
 			summary.append("\n\tPlayers around: ");
 			do { summary.append(iter.next()).append(" "); }

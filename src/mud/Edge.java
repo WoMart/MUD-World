@@ -1,18 +1,17 @@
 package mud;
 
-/***********************************************************************
- * cs3524.solutions.mud.mud.Edge
- ***********************************************************************/
-
 // Represents an path in the mud.MUD (an edge in a graph).
-class Edge
-{
-    public Vertex _dest;   // Your destination if you walk down this path
-    public String _view;   // What you see if you look down this path
+class Edge {
+
+    private Vertex dest;   // Your destination if you walk down this path
+    private String view;   // What you see if you look down this path
     
-    public Edge( Vertex d, String v ) {
-        _dest = d;
-	    _view = v;
+    Edge(Vertex d, String v) {
+        this.dest = d;
+	    this.view = v;
     }
+
+    Vertex getDest() { return this.dest; }
+    String getView() { return this.view; }
 }
 

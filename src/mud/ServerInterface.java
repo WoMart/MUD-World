@@ -12,7 +12,7 @@ public interface ServerInterface extends Remote {
     String usersOnline()
             throws RemoteException;
 
-    boolean createMUD(String mud_name)
+    boolean createMUD(String mud_name, String username)
             throws RemoteException;
     boolean joinMUD(String mud_name, String username)
             throws RemoteException;

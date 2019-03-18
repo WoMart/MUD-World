@@ -154,7 +154,7 @@ public class Client {
                     } else
                         message = "The MUD" + attribute + " does not exists";
                 } else if (action.startsWith("create") & !attribute.equals("")) {
-                    if (this.server.createMUD(attribute))
+                    if (this.server.createMUD(attribute, this.username))
                         message = "The MUD " + attribute + " has been created";
                     else
                         message = "The MUD" + attribute + " already exists";
