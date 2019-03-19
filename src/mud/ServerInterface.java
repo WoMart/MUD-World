@@ -1,7 +1,8 @@
 package mud;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.Remote;
+
 
 public interface ServerInterface extends Remote {
 

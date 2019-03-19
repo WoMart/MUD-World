@@ -6,6 +6,7 @@ import java.util.Vector;
 import java.util.List;
 import java.util.Map;
 
+
 // Represents a location in the mud.MUD (a vertex in the graph).
 class Vertex {
 

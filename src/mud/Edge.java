@@ -1,5 +1,6 @@
 package mud;
 
+
 // Represents an path in the mud.MUD (an edge in a graph).
 class Edge {
 

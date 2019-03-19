@@ -2,6 +2,7 @@ package mud;
 
 import java.rmi.RemoteException;
 
+
 public class MUDWorldServer {
 
     public static void main(String[] args) throws RemoteException {
