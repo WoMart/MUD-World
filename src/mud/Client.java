@@ -2,10 +2,7 @@ package mud;
 
 import java.net.MalformedURLException;
 
-import java.rmi.NotBoundException;
-import java.rmi.ConnectException;
-import java.rmi.RemoteException;
-import java.rmi.Naming;
+import java.rmi.*;
 
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -21,7 +18,7 @@ public class Client {
     private String hostname = "";
     private int port = 0;
 
-    private String username = "";
+    private String username = "USERNAME";
     private String location = "";
     private String cur_mud = "";
     private List<String> inventory = new ArrayList<>();
@@ -33,14 +30,15 @@ public class Client {
         System.setSecurityManager(new SecurityManager());
 
         try {
-            this.username = "What is your name?";
-            this.username = getInput()[0];
             this.hostname = h;
             this.port = p;
             this.connect();
+
+            this.username = this.inputUsername();
+            this.join();
+            this.menu();
         }
         catch (NullPointerException ignored) {}
-
     }
 
     private void connect() throws RemoteException {
@@ -48,8 +46,6 @@ public class Client {
             this.server = (ServerInterface) Naming.lookup(
                     String.format("rmi://%s:%d/mud", this.hostname, this.port)
             );
-            this.join();
-            this.menu();
         }
         catch (MalformedURLException | NotBoundException e) {
             System.err.println("Failed to connect to the server.\nError: " + e);
@@ -205,7 +201,6 @@ public class Client {
 
     private void menu() throws RemoteException {
         String message = "";
-        this.server.unlock();
         this.inmenu = true;
         try {
             while (this.inmenu) {
@@ -224,7 +219,6 @@ public class Client {
                 String action = input[0];
                 String attribute = input[1];
 
-                this.server.lock();
                 if (action.startsWith("join") & !attribute.equals("")) {
                     if (this.server.joinMUD(attribute, this.username)) {
                         message = "Joining the MUD " + attribute;
@@ -246,17 +240,14 @@ public class Client {
                     System.out.println("\nQuitting MUD World");
                     this.disconnect();
                 } else message = "What does he mean?";
-                this.server.unlock();
             }
         } catch (ConnectException ignored) { this.shutdown(); }
     }
 
-    //TODO: ponder the unlocks
     private void play() throws RemoteException {
         this.location = this.server.startLocation(this.cur_mud);
         System.out.println("\nType 'help' to see available commands");
 
-        this.server.unlock();
         this.ingame = true;
         try {
             while (this.ingame) {
@@ -264,7 +255,6 @@ public class Client {
                 String action = input[0];
                 String attribute = input[1];
 
-                this.server.lock();
                 if (action.startsWith("move")
                         | action.startsWith("go")) {
                     this.move(attribute);
@@ -300,13 +290,11 @@ public class Client {
                     if ((this.getInput()[0]).equals("yes")) {
                         this.ingame = false;
                         this.quit();
-                        this.menu();
                     }
                 }
                 else {
                     System.out.println("But to no avail...");
                 }
-                this.server.unlock();
             }
         } catch (ConnectException ignored) { this.shutdown(); }
     }
@@ -327,6 +315,23 @@ public class Client {
         catch (IndexOutOfBoundsException ignored) { }
 
         return output;
+    }
+
+    private String inputUsername() throws RemoteException {
+        String user = this.getInput()[0];
+        if ( (this.server).isUser(user) ) {
+            System.out.println("Username already taken");
+            return this.inputUsername();
+        }
+        if ( user.contains(".")
+                || user.contains(" ")
+                || user.length() < 3
+                || user.length() > 16)
+        {
+            System.out.println("Username should be between 3 and 16 characters long with no spaces nor dots");
+            return this.inputUsername();
+        }
+        return user;
     }
 
     void shutdown() throws RemoteException {

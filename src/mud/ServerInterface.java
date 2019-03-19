@@ -10,6 +10,8 @@ public interface ServerInterface extends Remote {
             throws RemoteException;
     void removeUser(String username)
             throws RemoteException;
+    boolean isUser(String username)
+            throws RemoteException;
     String usersOnline()
             throws RemoteException;
 
@@ -35,10 +37,4 @@ public interface ServerInterface extends Remote {
             throws RemoteException;
     void commandDrop(String mud, String loc, String thing)
             throws RemoteException;
-
-    void lock()
-        throws RemoteException;
-    void unlock()
-        throws RemoteException;
-
 }

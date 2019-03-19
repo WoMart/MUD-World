@@ -28,7 +28,6 @@ public class Server implements ServerInterface {
         this.serverMessage("Your server is running...");
 
         this.createMUD("default", "admin");
-        System.out.println(this.getMUD("default")); //TODO: remove after testing
     }
 
     private MUD getMUD(String name) {
@@ -100,6 +99,11 @@ public class Server implements ServerInterface {
         this.serverMessage("User: '" + username + "' is now offline.");
     }
 
+    public boolean isUser(String username) {
+        System.out.println("isUser");
+        return !this.users.isEmpty() && this.users.contains(username);
+    }
+
     public String usersOnline() {
         StringBuilder online = new StringBuilder("\nUsers online:\n");
         for(String user : this.users)
@@ -135,12 +139,16 @@ public class Server implements ServerInterface {
         return this.busy;
     }
 
-    public void lock() {
-        while(this.isBusy());
+    private void lock() {
+        while(this.isBusy()) {
+            try { Thread.sleep(100); }
+            catch (InterruptedException ignored)
+            { System.err.println("An error occurred while waiting for the unlock"); }
+        }
         this.busy = true;
     }
 
-    public void unlock() {
+    private void unlock() {
         this.busy = false;
     }
 
