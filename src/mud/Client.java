@@ -149,13 +149,13 @@ public class Client {
         else if (command.equals("take")) {
             help.append("take\n")
                     .append("Collects an item from current location\n")
-                    .append("Required attribute: item")
+                    .append("Required attribute: item\n")
                     .append("Use command look to check for items in location");
         }
         else if (command.equals("drop")) {
-            help.append("drop")
+            help.append("drop\n")
                     .append("Drops an item in current location\n")
-                    .append("Required attribute: item")
+                    .append("Required attribute: item\n")
                     .append("Use command (i/inv/inventory) to check for items in location");
         }
         else if (command.equals("i") | command.equals("inv") | command.equals("inventory")) {
@@ -179,7 +179,9 @@ public class Client {
                     .append("Displays available commands or details of given command\n")
                     .append("Optional attribute: command");
         }
-        else help.append(command).append(" unknown.\nCommand not recognised\nType 'help' to see all available commands");
+        else help.append(command).append(" unknown.\n")
+                    .append("Command not recognised\n")
+                    .append("Type 'help' to see all available commands");
 
         System.out.println(help.append("\n\n").toString());
     }
@@ -216,6 +218,7 @@ public class Client {
                 String action = input[0];
                 String attribute = input[1];
 
+                this.server.lock();
                 if (action.startsWith("join") & !attribute.equals("")) {
                     if (this.server.joinMUD(attribute, this.username)) {
                         message = "Joining the MUD " + attribute;
@@ -237,7 +240,7 @@ public class Client {
                     System.out.println("\nQuitting MUD World");
                     this.disconnect();
                 } else message = "What does he mean?";
-
+                this.server.unlock();
             }
         } catch (ConnectException ignored) {
             System.err.println("[SERVER CONNECTION LOST] Server is not responding");
@@ -256,6 +259,7 @@ public class Client {
                 String action = input[0];
                 String attribute = input[1];
 
+                this.server.lock();
                 if (action.startsWith("move")
                         | action.startsWith("go")) {
                     this.move(attribute);
@@ -297,6 +301,7 @@ public class Client {
                 else {
                     System.out.println("But to no avail...");
                 }
+                this.server.unlock();
             }
         } catch (ConnectException ignored) {
             System.err.println("[SERVER CONNECTION LOST] Server is not responding");

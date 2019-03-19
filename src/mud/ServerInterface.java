@@ -36,4 +36,9 @@ public interface ServerInterface extends Remote {
     void commandDrop(String mud, String loc, String thing)
             throws RemoteException;
 
+    void lock()
+        throws RemoteException;
+    void unlock()
+        throws RemoteException;
+
 }

@@ -19,6 +19,7 @@ public class Server implements ServerInterface {
 
     private List<String> users = new ArrayList<>();
     private Map<String, MUD> mudMap= new HashMap<>();
+    private boolean busy = false;
 
 
     Server(int registry, int server) throws RemoteException{
@@ -128,6 +129,19 @@ public class Server implements ServerInterface {
 
     public void commandDrop(String mud_name, String loc, String thing) {
         this.getMUD(mud_name).dropThing(loc, thing);
+    }
+
+    private boolean isBusy() {
+        return this.busy;
+    }
+
+    public void lock() {
+        while(this.isBusy());
+        this.busy = true;
+    }
+
+    public void unlock() {
+        this.busy = false;
     }
 
     /**
