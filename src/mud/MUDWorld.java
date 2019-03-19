@@ -6,8 +6,8 @@ import java.rmi.RemoteException;
 
 public class MUDWorld {
 
-    public static void main(String[] args) throws RemoteException
-    {
+    public static void main(String[] args) throws RemoteException {
+
         String host = "";
         int port = 0;
         try {
@@ -22,11 +22,9 @@ public class MUDWorld {
         try {
             Client client = new Client(host, port);
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                try {
-                    client.shutdown();
-                } catch (RemoteException ignored) {
-                    System.err.println("[SERVER CONNECTION LOST] Game shutdown");
-                }
+                try { client.shutdown(); }
+                catch (RemoteException ignored)
+                { System.err.println("[SERVER CONNECTION LOST] Game shutdown"); }
             }));
         }
         catch (ConnectException ignored)

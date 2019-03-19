@@ -56,13 +56,6 @@ public class Client {
         }
     }
 
-    private void disconnect() throws RemoteException {
-        this.port = 0;
-        this.inmenu = false;
-        this.server.removeUser(this.username);
-        System.out.println("[" + this.username + "]Disconnected from " + this.hostname);
-    }
-
     private void join() throws RemoteException {
         this.server.addUser(this.username);
         System.out.println("[" + this.username + "] You have connected to " + this.hostname);
@@ -75,6 +68,16 @@ public class Client {
         this.cur_mud = "";
         this.inventory.clear();
     }
+
+    private void disconnect() throws RemoteException {
+        this.port = 0;
+        this.inmenu = false;
+        this.server.removeUser(this.username);
+        System.out.println("[" + this.username + "]Disconnected from " + this.hostname);
+    }
+
+
+    /* User commands */
 
     private String whoIsOnline() throws RemoteException {
         return this.server.usersOnline();
@@ -198,9 +201,12 @@ public class Client {
         System.out.println(inv.toString());
     }
 
+    /* Interfaces */
+
     private void menu() throws RemoteException {
-        this.inmenu = true;
         String message = "";
+        this.server.unlock();
+        this.inmenu = true;
         try {
             while (this.inmenu) {
                 System.out.println(
@@ -242,19 +248,18 @@ public class Client {
                 } else message = "What does he mean?";
                 this.server.unlock();
             }
-        } catch (ConnectException ignored) {
-            System.err.println("[SERVER CONNECTION LOST] Server is not responding");
-            this.shutdown();
-        }
+        } catch (ConnectException ignored) { this.shutdown(); }
     }
 
+    //TODO: ponder the unlocks
     private void play() throws RemoteException {
         this.location = this.server.startLocation(this.cur_mud);
         System.out.println("\nType 'help' to see available commands");
 
+        this.server.unlock();
         this.ingame = true;
         try {
-            while (ingame) {
+            while (this.ingame) {
                 String[] input = this.getInput();
                 String action = input[0];
                 String attribute = input[1];
@@ -303,10 +308,7 @@ public class Client {
                 }
                 this.server.unlock();
             }
-        } catch (ConnectException ignored) {
-            System.err.println("[SERVER CONNECTION LOST] Server is not responding");
-            this.shutdown();
-        }
+        } catch (ConnectException ignored) { this.shutdown(); }
     }
 
     private String[] getInput() {

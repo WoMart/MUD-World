@@ -6,13 +6,18 @@ import java.rmi.RemoteException;
 public class MUDWorldServer {
 
     public static void main(String[] args) throws RemoteException {
-        if (args.length < 2) {
-            System.out.println("Usage:\njava mudserver <registry port> <server port>");
-            return;
+
+        int registry = 0;
+        int server = 0;
+        try {
+            registry = Integer.parseInt(args[0]);
+            server = Integer.parseInt(args[1]);
+        }
+        catch (IndexOutOfBoundsException | NumberFormatException ignored) {
+            System.out.println("Failed to start the game.\nRequired arguments: <hostname> <server port>\n");
+            System.exit(0);
         }
 
-        int registry = Integer.parseInt(args[0]);
-        int server = Integer.parseInt(args[1]);
         new Server(registry, server);
     }
 }
