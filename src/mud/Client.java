@@ -58,6 +58,7 @@ public class Client {
 
     private void disconnect() throws RemoteException {
         this.port = 0;
+        this.inmenu = false;
         this.server.removeUser(this.username);
         System.out.println("[" + this.username + "]Disconnected from " + this.hostname);
     }
@@ -117,6 +118,72 @@ public class Client {
 
     }
 
+    private void help() {
+        StringBuilder help = new StringBuilder("\nHelp Menu:\n");
+        help.append("Available commands: ")
+                .append("look ")
+                .append("(move/go) ")
+                .append("take ")
+                .append("drop ")
+                .append("(i/inv/inventory) ")
+                .append("(exit/quit) ")
+                .append("players ")
+                .append("online ")
+                .append("help ");
+        help.append("\nFor details of a command type 'help <command>'");
+        System.out.println(help.append("\n\n").toString());
+    }
+
+    private void help(String command) {
+        StringBuilder help = new StringBuilder("\nUsage of ");
+
+        if (command.equals("look")) {
+            help.append("look\n")
+                    .append("Provides a description of current location");
+        }
+        else if (command.equals("move") | command.equals("go")) {
+            help.append("(move/go)\n")
+                    .append("Transports the hero into a specified adjacent location\n")
+                    .append("Requires attribute: (north|east|west|south)");
+        }
+        else if (command.equals("take")) {
+            help.append("take\n")
+                    .append("Collects an item from current location\n")
+                    .append("Required attribute: item")
+                    .append("Use command look to check for items in location");
+        }
+        else if (command.equals("drop")) {
+            help.append("drop")
+                    .append("Drops an item in current location\n")
+                    .append("Required attribute: item")
+                    .append("Use command (i/inv/inventory) to check for items in location");
+        }
+        else if (command.equals("i") | command.equals("inv") | command.equals("inventory")) {
+            help.append("(i/inv/inventory)\n")
+                    .append("Displays currently hold items");
+        }
+        else if (command.equals("exit") | command.equals("quit")) {
+            help.append("(exit/quit)\n")
+                    .append("Quit current MUD and go back to main menu");
+        }
+        else if (command.equals("players")) {
+            help.append("players\n")
+                    .append("Display username of players in this MUD");
+        }
+        else if (command.equals("online")) {
+            help.append("online\n")
+                    .append("Display usernames of all users online");
+        }
+        else if (command.equals("help")) {
+            help.append("help\n")
+                    .append("Displays available commands or details of given command\n")
+                    .append("Optional attribute: command");
+        }
+        else help.append(command).append(" unknown.\nCommand not recognised\nType 'help' to see all available commands");
+
+        System.out.println(help.append("\n\n").toString());
+    }
+
     private void inventory() {
         StringBuilder inv = new StringBuilder("\nYour inventory");
         if(this.inventory.isEmpty())
@@ -172,7 +239,10 @@ public class Client {
                 } else message = "What does he mean?";
 
             }
-        } catch (ConnectException ignored) { this.shutdown(); }
+        } catch (ConnectException ignored) {
+            System.err.println("[SERVER CONNECTION LOST] Server is not responding");
+            this.shutdown();
+        }
     }
 
     private void play() throws RemoteException {
@@ -186,7 +256,8 @@ public class Client {
                 String action = input[0];
                 String attribute = input[1];
 
-                if (action.startsWith("move")) {
+                if (action.startsWith("move")
+                        | action.startsWith("go")) {
                     this.move(attribute);
                 }
                 else if (action.startsWith("take")) {
@@ -204,11 +275,8 @@ public class Client {
                     this.look(this.location);
                 }
                 else if (action.equals("help")) {
-                    System.out.println("\thelp\t\tshows this menu\n\n"
-                            + "\texit\n\tquit\t\tleaves the game\n\n"
-                            + "\tuserlist\tsee who is online\n\n"
-                            + "\tlook\t\tlook around you\n\n");
-
+                    if (attribute.equals("")) this.help();
+                    else this.help(attribute);
                 }
                 else if (action.equals("online")) {
                     System.out.println( this.whoIsOnline() );
@@ -218,7 +286,7 @@ public class Client {
                             this.server.usersInWorld(this.cur_mud)
                     );
                 }
-                else if (action.equals("exit") || action.equals("quit")) {
+                else if (action.equals("exit") | action.equals("quit")) {
                     System.out.println("Are you sure you want to exit the game?\nEnter 'yes' to confirm: ");
                     if ((this.getInput()[0]).equals("yes")) {
                         this.ingame = false;
@@ -230,7 +298,10 @@ public class Client {
                     System.out.println("But to no avail...");
                 }
             }
-        } catch (ConnectException ignored) { this.shutdown(); }
+        } catch (ConnectException ignored) {
+            System.err.println("[SERVER CONNECTION LOST] Server is not responding");
+            this.shutdown();
+        }
     }
 
     private String[] getInput() {
