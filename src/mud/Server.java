@@ -1,16 +1,18 @@
 package mud;
 
 import java.rmi.server.UnicastRemoteObject;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.Naming;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.text.DateFormat;
 
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.net.InetAddress;
+
+import java.util.*;
 
 public class Server implements ServerInterface {
 
@@ -19,8 +21,10 @@ public class Server implements ServerInterface {
 
 
     Server(int registry, int server) throws RemoteException{
+        LocateRegistry.createRegistry(registry);
         createServer(registry, server);
         this.serverMessage("Your server is running...");
+
         this.createMUD("default", "admin");
         System.out.println(this.getMUD("default")); //TODO: remove after testing
     }
