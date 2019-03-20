@@ -23,13 +23,12 @@ public class MUD implements Serializable
 		createEdges( "static/mymud.edg" );
 		recordDescriptions( "static/mymud.msg" );
 		recordThings( "static/mymud.thg" );
-
-		System.out.println( "Files read..." );
-		System.out.println( vertexMap.size( ) + " vertices\n" );
 	}
 
 	// Returns MUD's start location
 	String getStartLocation() { return startLocation; }
+
+	public int getMapSize() { return this.vertexMap.size(); }
 
 	// Return given location. Create a new one if it does not exist yet
 	private Vertex getOrCreateVertex( String vertexName ) {

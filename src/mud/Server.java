@@ -25,13 +25,9 @@ public class Server implements ServerInterface {
     Server(int registry, int server) throws RemoteException{
         LocateRegistry.createRegistry(registry);
         createServer(registry, server);
-        this.serverMessage("Your server is running...");
+        this.serverMessage("Your server is running...\n");
 
         this.createMUD("default", "admin");
-    }
-
-    private MUD getMUD(String name) {
-        return mudMap.get(name);
     }
 
     private void createServer(int registry, int server) throws RemoteException {
@@ -40,7 +36,8 @@ public class Server implements ServerInterface {
 
         try {
             host = (InetAddress.getLocalHost()).getCanonicalHostName();
-            System.out.println("Hello, " + host + "!");
+            System.out.println();
+            this.serverMessage("Hello, " + host + "!");
         }
         catch(UnknownHostException e) {
             System.err.println("Exception caught on hostname: " + e);
@@ -55,20 +52,57 @@ public class Server implements ServerInterface {
 
         String url = String.format("rmi://%s:%d/mud", host, registry);
         this.serverMessage("Server address: " + url);
-        try {
-            Naming.rebind(url, mud);
-        }
+
+        try { Naming.rebind(url, mud); }
         catch(MalformedURLException e){
             System.err.println("Something wrong with the url\n" + e.getMessage());
         }
     }
 
+    /**
+     * Helper function to standardise the output messages
+     * Format: "[Time] Message"
+     */
+    private void serverMessage(String msg) {
+        DateFormat df = new SimpleDateFormat("dd/mm/yy HH:mm:ss");
+        System.out.println( "[" + df.format( new Date() ) + "] " + msg );
+    }
+
+    private void lock() {
+        while(this.busy) {
+            try { Thread.sleep(100); }
+            catch (InterruptedException ignored)
+            { System.err.println("An error occurred while waiting for the unlock"); }
+        }
+        this.busy = true;
+    }
+
+    private void unlock() {
+        this.busy = false;
+    }
+
+    private MUD getMUD(String name) {
+        return mudMap.get(name);
+    }
+
+    /* Client interactions */
+
     public boolean createMUD(String mud_name, String username) {
-        if (mudMap.containsKey(mud_name))
-            return false;
-        mudMap.put(mud_name, new MUD());
-        this.serverMessage("New MUD " + mud_name + " created by " + username + ".");
-        return true;
+        boolean created;
+        MUD newMUD = new MUD();
+        this.lock();
+        if (mudMap.containsKey(mud_name)) {
+            created = false;
+        }
+        else {
+            mudMap.put(mud_name, newMUD);
+            this.serverMessage(
+                    "New MUD " + mud_name + " created by " + username + ". "
+                            + newMUD.getMapSize() + " locations");
+            created = true;
+        }
+        this.unlock();
+        return created;
     }
 
     public boolean joinMUD(String mud_name, String username) {
@@ -100,7 +134,6 @@ public class Server implements ServerInterface {
     }
 
     public boolean isUser(String username) {
-        System.out.println("isUser");
         return !this.users.isEmpty() && this.users.contains(username);
     }
 
@@ -128,36 +161,13 @@ public class Server implements ServerInterface {
     }
 
     public boolean commandTake(String mud_name, String loc, String thing) {
-        return this.getMUD(mud_name).takeThing(loc, thing);
+        this.lock();
+        boolean taken = this.getMUD(mud_name).takeThing(loc, thing);
+        this.unlock();
+        return taken;
     }
 
     public void commandDrop(String mud_name, String loc, String thing) {
         this.getMUD(mud_name).dropThing(loc, thing);
-    }
-
-    private boolean isBusy() {
-        return this.busy;
-    }
-
-    private void lock() {
-        while(this.isBusy()) {
-            try { Thread.sleep(100); }
-            catch (InterruptedException ignored)
-            { System.err.println("An error occurred while waiting for the unlock"); }
-        }
-        this.busy = true;
-    }
-
-    private void unlock() {
-        this.busy = false;
-    }
-
-    /**
-     * Helper function to standardise the output messages
-     * Format: "[Time] Message"
-     */
-    private void serverMessage(String msg) {
-        DateFormat df = new SimpleDateFormat("dd/mm/yy HH:mm:ss");
-        System.out.println( "[" + df.format( new Date() ) + "] " + msg );
     }
 }
