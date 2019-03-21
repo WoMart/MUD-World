@@ -19,10 +19,10 @@ public class MUD implements Serializable
 	private List<String> players = new ArrayList<>();
 	private String startLocation = "";
 
-	MUD() {
-		createEdges( "static/mymud.edg" );
-		recordDescriptions( "static/mymud.msg" );
-		recordThings( "static/mymud.thg" );
+	MUD(String edg, String msg, String thg) {
+		createEdges( edg );
+		recordDescriptions( msg );
+		recordThings( thg );
 	}
 
 	// Returns MUD's start location

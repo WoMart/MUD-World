@@ -19,12 +19,15 @@ public class Server implements ServerInterface {
 
     private List<String> users = new ArrayList<>();
     private Map<String, MUD> mudMap= new HashMap<>();
+    private String staticFiles;
     private boolean busy = false;
 
 
-    Server(int registry, int server) throws RemoteException{
+    Server(int registry, int server, String sf) throws RemoteException{
         LocateRegistry.createRegistry(registry);
-        createServer(registry, server);
+        this.staticFiles = sf;
+
+        this.createServer(registry, server);
         this.serverMessage("Your server is running...\n");
 
         this.createMUD("default", "admin");
@@ -32,7 +35,6 @@ public class Server implements ServerInterface {
 
     private void createServer(int registry, int server) throws RemoteException {
         String host = "";
-        String policy = "static/mud.policy";
 
         try {
             host = (InetAddress.getLocalHost()).getCanonicalHostName();
@@ -41,10 +43,12 @@ public class Server implements ServerInterface {
         }
         catch(UnknownHostException e) {
             System.err.println("Exception caught on hostname: " + e);
+            System.exit(2137);
         }
 
         this.serverMessage("Server created on port " + registry);
 
+        String policy = this.staticFiles + "mud.policy";
         System.setProperty("java.security.policy", policy);
         System.setSecurityManager(new SecurityManager());
 
@@ -56,6 +60,7 @@ public class Server implements ServerInterface {
         try { Naming.rebind(url, mud); }
         catch(MalformedURLException e){
             System.err.println("Something wrong with the url\n" + e.getMessage());
+            System.exit(2137);
         }
     }
 
@@ -71,8 +76,7 @@ public class Server implements ServerInterface {
     private void lock() {
         while(this.busy) {
             try { Thread.sleep(100); }
-            catch (InterruptedException ignored)
-            { System.err.println("An error occurred while waiting for the unlock"); }
+            catch (InterruptedException ignored) {}
         }
         this.busy = true;
     }
@@ -89,7 +93,10 @@ public class Server implements ServerInterface {
 
     public boolean createMUD(String mud_name, String username) {
         boolean created;
-        MUD newMUD = new MUD();
+        String edg = this.staticFiles + "default.edg";
+        String msg = this.staticFiles + "default.msg";
+        String thg = this.staticFiles + "default.thg";
+        MUD newMUD = new MUD(edg, msg, thg);
         this.lock();
         if (mudMap.containsKey(mud_name)) {
             created = false;
