@@ -12,3 +12,7 @@ out/
 
 *.iml
 rmi.bat
+.classpath
+.project
+MUDgame.eml
+MUDgame.userlibraries
