@@ -302,7 +302,7 @@ public class Client {
 
     private String[] getInput() {
         BufferedReader in = new BufferedReader( new InputStreamReader(System.in) );
-        System.out.print("[" + this.username + "]>>> ");
+        System.out.print("\n[" + this.username + "]>>> ");
 
         String[] input = { "" , "" };
         try { input = in.readLine().split(" ", 2); }
