@@ -26,7 +26,8 @@ public class Client {
     private boolean ingame = false;
 
     Client(String h, int p) throws RemoteException {
-        System.setProperty("java.security.policy", "static/mud.policy");
+        String policy = System.getProperty("user.dir") + "\\static\\mud.policy";
+        System.setProperty("java.security.policy", policy);
         System.setSecurityManager(new SecurityManager());
 
         try {
