@@ -108,6 +108,7 @@ public class Server implements ServerInterface {
                             + newMUD.getMapSize() + " locations");
             created = true;
         }
+        this.serverMessage("User " + username + " created MUD " + mud_name + ".";
         this.unlock();
         return created;
     }
@@ -116,11 +117,13 @@ public class Server implements ServerInterface {
         if (!mudMap.containsKey(mud_name))
             return false;
         getMUD(mud_name).addPlayer(username);
+        this.serverMessage("User " + username + " joined MUD " + mud_name + ".");
         return true;
     }
 
     public void leaveMUD(String mud_name, String loc, String username) {
         this.getMUD(mud_name).removePlayer(loc, username);
+        this.serverMessage("User " + username + " left MUD " + mud_name + ".");
     }
 
     public String listMUD() {
