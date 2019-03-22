@@ -1,17 +1,11 @@
-#IntelliJ
-.idea/
-
-#Output folder
+# Output folder
 out/
 
-#metadata
-*.xml
+# IntelliJ data
+.idea/
+MUDgame.iml
 
-#compiled classes
-*.class
-
-*.iml
-rmi.bat
+# Eclipse export
 .classpath
 .project
 MUDgame.eml
