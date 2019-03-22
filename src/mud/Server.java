@@ -108,7 +108,6 @@ public class Server implements ServerInterface {
                             + newMUD.getMapSize() + " locations");
             created = true;
         }
-        this.serverMessage("User " + username + " created MUD " + mud_name + ".");
         this.unlock();
         return created;
     }
